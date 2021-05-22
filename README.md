@@ -2,6 +2,14 @@
 
 Tools for creating and paying invoices privately on Bitcoin SV
 
+The code is hosted [on GitHub](https://github.com/p2ppsr/sendover) and the package is available [through NPM](https://www.npmjs.com/package/sendover).
+
+## Installation
+
+```
+npm i sendover
+```
+
 ## Example Usage
 
 ```js
