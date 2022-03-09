@@ -6,9 +6,7 @@ The code is hosted [on GitHub](https://github.com/p2ppsr/sendover) and the packa
 
 ## Installation
 
-```
-npm i sendover
-```
+    npm i sendover
 
 ## Example Usage
 
@@ -78,13 +76,14 @@ Returns a payment address for use by the sender, given the recipient's public ke
 
 #### Parameters
 
-*   `$0` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** 
+*   `obj` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** All parametera ere provided in an object
 
-    *   `$0.senderPrivateKey`  
-    *   `$0.recipientPublicKey`  
-    *   `$0.invoiceNumber`  
+    *   `obj.senderPrivateKey` **[String](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** The private key of the sender in WIF format
+    *   `obj.recipientPublicKey` **[String](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** The public key of the recipient in hexadecimal DER format
+    *   `obj.invoiceNumber` **[String](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** The invoice number to use
+    *   `obj.returnType` **[String](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** The destination key return type, either `address` or `publicKey` (optional, default `address`)
 
-Returns **[String](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** The base58 Bitcoin address where the payment is to be sent.
+Returns **[String](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** The destination address or public key
 
 ### getPaymentPrivateKey
 
@@ -92,13 +91,14 @@ Returns a private key for use by the recipient, given the sender's public key, t
 
 #### Parameters
 
-*   `$0` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** 
+*   `obj` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** All parametera ere provided in an object
 
-    *   `$0.recipientPrivateKey`  
-    *   `$0.senderPublicKey`  
-    *   `$0.invoiceNumber`  
+    *   `obj.recipientPrivateKey` **[String](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** The private key of the recipient in WIF format
+    *   `obj.senderPublicKey` **[String](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** The public key of the sender in hexadecimal DER format
+    *   `obj.invoiceNumber` **[String](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** The invoice number that was used
+    *   `obj.returnType` **[String](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** The incoming payment key return type, either `wif` or `hex` (optional, default `wif`)
 
-Returns **[String](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** The base58 Bitcoin private key that can unlock the money.
+Returns **[String](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** The incoming payment key that can unlock the money.
 
 ## Credits
 

@@ -1,3 +1,4 @@
+/* eslint-env jest */
 const sendover = require('../index')
 const bsv = require('bsv')
 

@@ -5,10 +5,21 @@ const G = bsv.crypto.Point.getG()
 
 /**
  * Returns a payment address for use by the sender, given the recipient's public key, the sender's private key and the invoice number.
+ * 
+ * @param {Object} obj All parametera ere provided in an object
+ * @param {String} obj.senderPrivateKey The private key of the sender in WIF format
+ * @param {String} obj.recipientPublicKey The public key of the recipient in hexadecimal DER format
+ * @param {String} obj.invoiceNumber The invoice number to use
+ * @param {String} [obj.returnType=address] The destination key return type, either `address` or `publicKey`
  *
- * @returns {String} The base58 Bitcoin address where the payment is to be sent.
+ * @returns {String} The destination address or public key
  */
-module.exports = ({ senderPrivateKey, recipientPublicKey, invoiceNumber }) => {
+module.exports = ({
+  senderPrivateKey,
+  recipientPublicKey,
+  invoiceNumber,
+  returnType = 'address'
+}) => {
   // First, a shared secret is calculated based on the public and private keys.
   const publicKey = bsv.PublicKey.fromString(recipientPublicKey)
   const privateKey = BN.fromHex(senderPrivateKey)
@@ -29,5 +40,11 @@ module.exports = ({ senderPrivateKey, recipientPublicKey, invoiceNumber }) => {
   )
 
   // Finally, an address is calculated with the new public key.
-  return bsv.Address.fromPublicKey(finalPublicKey).toString()
+  if (returnType === 'address') {
+    return bsv.Address.fromPublicKey(finalPublicKey).toString()
+  } else if (returnType === 'publicKey') {
+    return finalPublicKey.toString()
+  } else {
+    throw new Error('The return type must either be "address" or "publicKey"')
+  }
 }

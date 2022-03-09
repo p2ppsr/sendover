@@ -1,3 +1,4 @@
+/* eslint-env jest */
 const getPaymentAddress = require('../getPaymentAddress')
 const generateKeypair = require('../generateKeypair')
 const bsv = require('bsv')
@@ -18,6 +19,39 @@ describe('getPaymentAddress', () => {
     expect(() => {
       bsv.Address.fromString(result)
     }).not.toThrow()
+  })
+  it('Returns a valid public key', () => {
+    const senderKeypair = generateKeypair()
+    const recipientKeypair = generateKeypair()
+    const testInvoiceNumber = require('crypto')
+      .randomBytes(8)
+      .toString('base64')
+    const result = getPaymentAddress({
+      senderPrivateKey: senderKeypair.privateKey,
+      recipientPublicKey: recipientKeypair.publicKey,
+      invoiceNumber: testInvoiceNumber,
+      returnType: 'publicKey'
+    })
+    expect(() => {
+      bsv.PublicKey.fromString(result)
+    }).not.toThrow()
+  })
+  it('Throws an error if an invalid return type is given', () => {
+    const senderKeypair = generateKeypair()
+    const recipientKeypair = generateKeypair()
+    const testInvoiceNumber = require('crypto')
+      .randomBytes(8)
+      .toString('base64')
+    expect(() => {
+     getPaymentAddress({
+      senderPrivateKey: senderKeypair.privateKey,
+      recipientPublicKey: recipientKeypair.publicKey,
+      invoiceNumber: testInvoiceNumber,
+      returnType: 'privateKey'
+    })
+    }).toThrow(new Error(
+      'The return type must either be "address" or "publicKey"'
+    ))
   })
   it('Returns a different address with a different invoice number', () => {
     const senderKeypair = generateKeypair()

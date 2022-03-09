@@ -6,9 +6,20 @@ const N = bsv.crypto.Point.getN()
 /**
  * Returns a private key for use by the recipient, given the sender's public key, the recipient's private key and the invoice number.
  *
- * @returns {String} The base58 Bitcoin private key that can unlock the money.
+ * @param {Object} obj All parametera ere provided in an object
+ * @param {String} obj.recipientPrivateKey The private key of the recipient in WIF format
+ * @param {String} obj.senderPublicKey The public key of the sender in hexadecimal DER format
+ * @param {String} obj.invoiceNumber The invoice number that was used
+ * @param {String} [obj.returnType=wif] The incoming payment key return type, either `wif` or `hex`
+ * 
+ * @returns {String} The incoming payment key that can unlock the money.
  */
-module.exports = ({ recipientPrivateKey, senderPublicKey, invoiceNumber }) => {
+module.exports = ({
+  recipientPrivateKey,
+  senderPublicKey,
+  invoiceNumber,
+  returnType = 'wif'
+}) => {
   // First, a shared secret is calculated based on the public and private keys.
   const publicKey = bsv.PublicKey.fromString(senderPublicKey)
   const privateKey = BN.fromHex(recipientPrivateKey)
@@ -22,5 +33,12 @@ module.exports = ({ recipientPrivateKey, senderPublicKey, invoiceNumber }) => {
 
   // Finally, the hmac is added to the private key, and the result is modulo N.
   const finalPrivateKey = privateKey.add(BN.fromBuffer(hmac)).mod(N)
-  return new bsv.PrivateKey(finalPrivateKey).toWIF()
+
+  if (returnType === 'wif') {
+    return new bsv.PrivateKey(finalPrivateKey).toWIF()
+  } else if (returnType === 'hex') {
+    return finalPrivateKey.toHex()
+  } else {
+    throw new Error('The return type must either be "wif" or "hex"')
+  }
 }
