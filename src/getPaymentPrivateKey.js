@@ -11,7 +11,7 @@ const N = bsv.crypto.Point.getN()
  * @param {String} obj.senderPublicKey The public key of the sender in hexadecimal DER format
  * @param {String} obj.invoiceNumber The invoice number that was used
  * @param {String} [obj.returnType=wif] The incoming payment key return type, either `wif` or `hex`
- * 
+ *
  * @returns {String} The incoming payment key that can unlock the money.
  */
 module.exports = ({
@@ -21,8 +21,23 @@ module.exports = ({
   returnType = 'wif'
 }) => {
   // First, a shared secret is calculated based on the public and private keys.
-  const publicKey = bsv.PublicKey.fromString(senderPublicKey)
-  const privateKey = BN.fromHex(recipientPrivateKey)
+  let publicKey, privateKey
+  if (typeof senderPublicKey === 'string') {
+    publicKey = bsv.PublicKey.fromString(senderPublicKey)
+  } else if (senderPublicKey instanceof bsv.PublicKey) {
+    publicKey = senderPublicKey
+  } else {
+    throw new Error('Unrecognized format for senderPublicKey')
+  }
+  if (typeof recipientPrivateKey === 'string') {
+    privateKey = BN.fromHex(recipientPrivateKey)
+  } else if (recipientPrivateKey instanceof BN) {
+    privateKey = recipientPrivateKey
+  } else if (recipientPrivateKey instanceof bsv.PrivateKey) {
+    privateKey = recipientPrivateKey.bn
+  } else {
+    throw new Error('Unrecognized format for recipientPrivateKey')
+  }
   const sharedSecret = publicKey.point.mul(privateKey).toBuffer()
 
   // The invoice number is turned into a buffer.
@@ -38,6 +53,8 @@ module.exports = ({
     return new bsv.PrivateKey(finalPrivateKey).toWIF()
   } else if (returnType === 'hex') {
     return finalPrivateKey.toHex()
+  } else if (returnType === 'bsv') {
+    return finalPrivateKey
   } else {
     throw new Error('The return type must either be "wif" or "hex"')
   }

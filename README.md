@@ -59,14 +59,21 @@ const privateKey = sendover.getPaymentPrivateKey({
 #### Table of Contents
 
 *   [generateKeypair](#generatekeypair)
-*   [getPaymentAddress](#getpaymentaddress)
     *   [Parameters](#parameters)
-*   [getPaymentPrivateKey](#getpaymentprivatekey)
+*   [getPaymentAddress](#getpaymentaddress)
     *   [Parameters](#parameters-1)
+*   [getPaymentPrivateKey](#getpaymentprivatekey)
+    *   [Parameters](#parameters-2)
 
 ### generateKeypair
 
 Generates a public/private keypair for the sending and receiving of invoices.
+
+#### Parameters
+
+*   `obj` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** All parameters are given in an object (optional, default `{}`)
+
+    *   `obj.returnType` **[String](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** Return type, either "hex" or "bsv" (optional, default `'hex'`)
 
 Returns **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** The generated keypair, with `privateKey` and `publicKey` properties.
 
