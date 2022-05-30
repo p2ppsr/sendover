@@ -52,7 +52,11 @@ module.exports = ({
   if (returnType === 'wif') {
     return new bsv.PrivateKey(finalPrivateKey).toWIF()
   } else if (returnType === 'hex') {
-    return finalPrivateKey.toHex()
+    let privateKeyInHex = finalPrivateKey.toHex()
+    while (privateKeyInHex.length !== 64) {
+      privateKeyInHex = '0' + privateKeyInHex
+    }
+    return privateKeyInHex
   } else if (returnType === 'bsv') {
     return finalPrivateKey
   } else {
