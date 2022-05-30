@@ -53,7 +53,7 @@ module.exports = ({
     return new bsv.PrivateKey(finalPrivateKey).toWIF()
   } else if (returnType === 'hex') {
     let privateKeyInHex = finalPrivateKey.toHex()
-    while (Buffer.byteLength(privateKeyInHex, 'hex') !== 32) {
+    while (privateKeyInHex.length !== 64) {
       privateKeyInHex = '0' + privateKeyInHex
     }
     return privateKeyInHex
