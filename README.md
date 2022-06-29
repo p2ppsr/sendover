@@ -103,7 +103,7 @@ Returns a private key for use by the recipient, given the sender's public key, t
     *   `obj.recipientPrivateKey` **[String](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** The private key of the recipient in WIF format
     *   `obj.senderPublicKey` **[String](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** The public key of the sender in hexadecimal DER format
     *   `obj.invoiceNumber` **[String](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** The invoice number that was used
-    *   `obj.returnType` **[String](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** The incoming payment key return type, `wif`, `hex`, `buffer`, or `bsv` (optional, default `wif`) - Note: specifying a return type of 'bsv' will require you to use an argument of { size: 32 } when calling .toHex() or .toBuffer() on the bsv object.
+    *   `obj.returnType` **[String](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** The incoming payment key return type, `wif`, `hex`, `buffer`, or `bsv` (optional, default `wif`) - Note: specifying a return type of `bsv` will require you to use an argument of `{ size: 32 }` when calling `.toHex()` or `.toBuffer()` on the bsv object.
 
 Returns **[String](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** | **[Buffer](https://nodejs.org/api/buffer.html)** | **[BN](https://github.com/moneybutton/bsv/blob/bsv-legacy/lib/crypto/bn.js)** The incoming payment key that can unlock the money.
 
