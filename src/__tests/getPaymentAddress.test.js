@@ -43,12 +43,12 @@ describe('getPaymentAddress', () => {
       .randomBytes(8)
       .toString('base64')
     expect(() => {
-     getPaymentAddress({
-      senderPrivateKey: senderKeypair.privateKey,
-      recipientPublicKey: recipientKeypair.publicKey,
-      invoiceNumber: testInvoiceNumber,
-      returnType: 'privateKey'
-    })
+      getPaymentAddress({
+        senderPrivateKey: senderKeypair.privateKey,
+        recipientPublicKey: recipientKeypair.publicKey,
+        invoiceNumber: testInvoiceNumber,
+        returnType: 'privateKey'
+      })
     }).toThrow(new Error(
       'The return type must either be "address" or "publicKey"'
     ))
