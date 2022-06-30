@@ -2,7 +2,8 @@
 const getPaymentPrivateKey = require('../getPaymentPrivateKey')
 const generateKeypair = require('../generateKeypair')
 const bsv = require('bsv')
-const testVectors = require('./getPaymentPrivateKey.vectors')
+// const testVectors = require('./getPaymentPrivateKey.vectors')
+const { generateTestVectors } = require('./getPaymentPrivateKey.vectorGenerator')
 
 describe('getPaymentPrivateKey', () => {
   it('Returns a valid Bitcoin SV private key', () => {
@@ -110,13 +111,17 @@ describe('getPaymentPrivateKey', () => {
     })
     expect(firstResult).not.toEqual(secondResult)
   })
+  const testVectors = generateTestVectors()
   testVectors.forEach((vector, index) => {
     it(`Passes test vector #${index + 1}`, () => {
-      expect(getPaymentPrivateKey({
+      const privateKey = getPaymentPrivateKey({
         senderPublicKey: vector.senderPublicKey,
         recipientPrivateKey: vector.recipientPrivateKey,
-        invoiceNumber: vector.invoiceNumber
-      })).toEqual(vector.privateKey)
+        invoiceNumber: vector.invoiceNumber,
+        returnType: 'hex'
+      })
+      expect(privateKey.length).toEqual(64)
+      expect(privateKey).toEqual(vector.privateKey)
     })
   })
 })
