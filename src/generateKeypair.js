@@ -17,7 +17,7 @@ module.exports = ({ returnType = 'hex' } = {}) => {
     }
   } else {
     return {
-      privateKey: privateKey.bn.toHex(),
+      privateKey: privateKey.bn.toHex({ size: 32 }),
       publicKey: privateKey.publicKey.toString()
     }
   }

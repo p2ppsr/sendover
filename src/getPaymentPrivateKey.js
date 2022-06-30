@@ -49,17 +49,16 @@ module.exports = ({
   // Finally, the hmac is added to the private key, and the result is modulo N.
   const finalPrivateKey = privateKey.add(BN.fromBuffer(hmac)).mod(N)
 
-  if (returnType === 'wif') {
-    return new bsv.PrivateKey(finalPrivateKey).toWIF()
-  } else if (returnType === 'hex') {
-    let privateKeyInHex = finalPrivateKey.toHex()
-    while (privateKeyInHex.length !== 64) {
-      privateKeyInHex = '0' + privateKeyInHex
-    }
-    return privateKeyInHex
-  } else if (returnType === 'bsv') {
-    return finalPrivateKey
-  } else {
-    throw new Error('The return type must either be "wif" or "hex"')
+  switch (returnType) {
+    case 'wif':
+      return new bsv.PrivateKey(finalPrivateKey).toWIF()
+    case 'hex':
+      return finalPrivateKey.toHex({ size: 32 })
+    case 'buffer':
+      return finalPrivateKey.toBuffer({ size: 32 })
+    case 'bsv':
+      return finalPrivateKey
+    default:
+      throw new Error('The return type must either be "wif" or "hex"')
   }
 }
