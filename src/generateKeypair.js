@@ -1,5 +1,9 @@
-const bsv = require('bsv')
-
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const bsv_1 = __importDefault(require("bsv"));
 /**
  * Generates a public/private keypair for the sending and receiving of invoices.
  *
@@ -9,16 +13,17 @@ const bsv = require('bsv')
  * @returns {Object} The generated keypair, with `privateKey` and `publicKey` properties.
  */
 module.exports = ({ returnType = 'hex' } = {}) => {
-  const privateKey = bsv.PrivateKey.fromRandom()
-  if (returnType === 'bsv') {
-    return {
-      privateKey,
-      publicKey: privateKey.publicKey
+    const privateKey = bsv_1.default.PrivateKey.fromRandom();
+    if (returnType === 'bsv') {
+        return {
+            privateKey,
+            publicKey: privateKey.publicKey
+        };
     }
-  } else {
-    return {
-      privateKey: privateKey.bn.toHex({ size: 32 }),
-      publicKey: privateKey.publicKey.toString()
+    else {
+        return {
+            privateKey: privateKey.bn.toHex({ size: 32 }),
+            publicKey: privateKey.publicKey.toString()
+        };
     }
-  }
-}
+};

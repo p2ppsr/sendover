@@ -1,5 +1,6 @@
+"use strict";
 module.exports = {
-  generateKeypair: require('./generateKeypair'),
-  getPaymentAddress: require('./getPaymentAddress'),
-  getPaymentPrivateKey: require('./getPaymentPrivateKey')
-}
+    generateKeypair: require('./generateKeypair'),
+    getPaymentAddress: require('./getPaymentAddress'),
+    getPaymentPrivateKey: require('./getPaymentPrivateKey')
+};
