@@ -1,5 +1,5 @@
 /* eslint-env jest */
-const sendover = require('../index')
+const sendover = require('../../lib/index')
 const bsv = require('bsv')
 
 describe('sendover', () => {

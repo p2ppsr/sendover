@@ -1,4 +1,4 @@
-const bsv = require('bsv')
+import bsv from 'bsv';
 
 /**
  * Generates a public/private keypair for the sending and receiving of invoices.

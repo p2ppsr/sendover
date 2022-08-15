@@ -19,7 +19,7 @@ module.exports = ({
   senderPublicKey,
   invoiceNumber,
   returnType = 'wif'
-}) => {
+} : any) => {
   // First, a shared secret is calculated based on the public and private keys.
   let publicKey, privateKey
   if (typeof senderPublicKey === 'string') {

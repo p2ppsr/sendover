@@ -1,4 +1,5 @@
-const bsv = require('bsv')
+import bsv from 'bsv';
+
 const BN = bsv.crypto.BN
 const Hash = bsv.crypto.Hash
 const G = bsv.crypto.Point.getG()
@@ -6,7 +7,7 @@ const G = bsv.crypto.Point.getG()
 /**
  * Returns a payment address for use by the sender, given the recipient's public key, the sender's private key and the invoice number.
  *
- * @param {Object} obj All parametera ere provided in an object
+ * @param {Object} obj All parameters are provided in an object
  * @param {String} obj.senderPrivateKey The private key of the sender in WIF format
  * @param {String} obj.recipientPublicKey The public key of the recipient in hexadecimal DER format
  * @param {String} obj.invoiceNumber The invoice number to use
@@ -19,7 +20,7 @@ module.exports = ({
   recipientPublicKey,
   invoiceNumber,
   returnType = 'address'
-}) => {
+} : any) => {
   // First, a shared secret is calculated based on the public and private keys.
   let publicKey, privateKey
   if (typeof recipientPublicKey === 'string') {
