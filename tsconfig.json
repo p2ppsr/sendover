@@ -11,7 +11,8 @@
     "typeRoots": [
       "./src/__types"
     ],
-//    "outDir": "./dist"
+    "outDir": "./lib",
+    "declaration": true
   },
   "include": [
     "./src"
