@@ -1,6 +1,8 @@
 /* eslint-env jest */
-const getPaymentPrivateKey = require('../../lib/getPaymentPrivateKey')
-const generateKeypair = require('../../lib/generateKeypair')
+//const getPaymentPrivateKey = require('../../lib/getPaymentPrivateKey')
+//const generateKeypair = require('../../lib/generateKeypair')
+const { getPaymentPrivateKey } = require('../../lib/getPaymentPrivateKey2')
+const { generateKeypair } = require('../../lib/generateKeypair2')
 const bsv = require('bsv')
 // const testVectors = require('./getPaymentPrivateKey.vectors')
 const { generateTestVectors } = require('./getPaymentPrivateKey.vectorGenerator')

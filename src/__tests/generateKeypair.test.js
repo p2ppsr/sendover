@@ -1,5 +1,6 @@
 /* eslint-env jest */
-const generateKeypair = require('../../lib/generateKeypair')
+//const generateKeypair = require('../../lib/generateKeypair')
+const { generateKeypair } = require('../../lib/generateKeypair2')
 const bsv = require('bsv')
 
 describe('generateKeypair', () => {

@@ -1,6 +1,8 @@
 /* eslint-env jest */
-const getPaymentAddress = require('../../lib/getPaymentAddress')
-const generateKeypair = require('../../lib/generateKeypair')
+//const getPaymentAddress = require('../../lib/getPaymentAddress')
+//const generateKeypair = require('../../lib/generateKeypair')
+const { getPaymentAddress } = require('../../lib/getPaymentAddress2')
+const { generateKeypair } = require('../../lib/generateKeypair2')
 const bsv = require('bsv')
 const testVectors = require('./getPaymentAddress.vectors')
 
