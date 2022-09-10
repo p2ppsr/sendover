@@ -1,1 +1,1 @@
-declare module 'bsv';
+declare module 'babbage-bsv';

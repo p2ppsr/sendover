@@ -1,6 +1,6 @@
 /* eslint-env jest */
 const sendover = require('../../lib/index')
-const bsv = require('bsv')
+const bsv = require('babbage-bsv')
 
 describe('sendover', () => {
   it('Works as described in README.md', () => {

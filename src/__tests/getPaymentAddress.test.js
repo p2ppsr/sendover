@@ -1,7 +1,7 @@
 /* eslint-env jest */
 const getPaymentAddress = require('../../lib/getPaymentAddress')
 const generateKeypair = require('../../lib/generateKeypair')
-const bsv = require('bsv')
+const bsv = require('babbage-bsv')
 const testVectors = require('./getPaymentAddress.vectors')
 
 describe('getPaymentAddress', () => {

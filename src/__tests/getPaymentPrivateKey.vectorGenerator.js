@@ -3,7 +3,7 @@ const generateKeypair = require('../../lib/generateKeypair')
 
 const generateTestVectors = () => {
   const vectors = []
-  for (let i = 0; i < 500; i++) {
+  for (let i = 0; i < 5; i++) {
     const senderKeypair = generateKeypair()
     const recipientKeypair = generateKeypair()
     const invoiceNumber = require('crypto')

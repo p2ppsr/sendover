@@ -1,4 +1,4 @@
-import bsv from 'bsv';
+import bsv from 'babbage-bsv';
 
 const BN = bsv.crypto.BN
 const Hash = bsv.crypto.Hash
@@ -60,7 +60,7 @@ module.exports = ({
     return bsv.Address.fromPublicKey(finalPublicKey).toString()
   } else if (returnType === 'publicKey') {
     return finalPublicKey.toString()
-  } else if (returnType === 'bsv') {
+  } else if (returnType === 'babbage-bsv') {
     return finalPublicKey
   } else {
     throw new Error('The return type must either be "address" or "publicKey"')

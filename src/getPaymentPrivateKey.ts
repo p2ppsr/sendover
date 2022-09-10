@@ -1,4 +1,4 @@
-const bsv = require('bsv')
+const bsv = require('babbage-bsv')
 const BN = bsv.crypto.BN
 const Hash = bsv.crypto.Hash
 const N = bsv.crypto.Point.getN()
@@ -56,7 +56,7 @@ module.exports = ({
       return finalPrivateKey.toHex({ size: 32 })
     case 'buffer':
       return finalPrivateKey.toBuffer({ size: 32 })
-    case 'bsv':
+    case 'babbage-bsv':
       return finalPrivateKey
     default:
       throw new Error('The return type must either be "wif" or "hex"')

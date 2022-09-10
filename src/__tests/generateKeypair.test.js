@@ -1,6 +1,6 @@
 /* eslint-env jest */
 const generateKeypair = require('../../lib/generateKeypair')
-const bsv = require('bsv')
+const bsv = require('babbage-bsv')
 
 describe('generateKeypair', () => {
   it('Returns object with publicKey / privateKey string properties', () => {

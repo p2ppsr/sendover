@@ -40,6 +40,6 @@
     "typescript": "^4.7.4"
   },
   "dependencies": {
-    "bsv": "^1.5.5"
+    "babbage-bsv": "^0.1.0"
   }
 }

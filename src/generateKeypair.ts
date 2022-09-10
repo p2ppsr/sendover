@@ -1,4 +1,4 @@
-import bsv from 'bsv';
+import bsv from 'babbage-bsv';
 
 /**
  * Generates a public/private keypair for the sending and receiving of invoices.
@@ -10,7 +10,7 @@ import bsv from 'bsv';
  */
 module.exports = ({ returnType = 'hex' } = {}) => {
   const privateKey = bsv.PrivateKey.fromRandom()
-  if (returnType === 'bsv') {
+  if (returnType === 'babbage-bsv') {
     return {
       privateKey,
       publicKey: privateKey.publicKey
