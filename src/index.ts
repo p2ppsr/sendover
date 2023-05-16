@@ -1,5 +1,3 @@
-module.exports = {
-  generateKeypair: require('./generateKeypair'),
-  getPaymentAddress: require('./getPaymentAddress'),
-  getPaymentPrivateKey: require('./getPaymentPrivateKey')
-}
+export * from './generateKeypair'
+export * from './getPaymentAddress'
+export * from './getPaymentPrivateKey'

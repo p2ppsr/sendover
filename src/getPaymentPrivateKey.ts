@@ -1,4 +1,5 @@
-const bsv = require('babbage-bsv')
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import bsv from 'babbage-bsv';
 const BN = bsv.crypto.BN
 const Hash = bsv.crypto.Hash
 const N = bsv.crypto.Point.getN()
@@ -14,12 +15,12 @@ const N = bsv.crypto.Point.getN()
  *
  * @returns {String} The incoming payment key that can unlock the money.
  */
-module.exports = ({
+export function getPaymentPrivateKey({
   recipientPrivateKey,
   senderPublicKey,
   invoiceNumber,
   returnType = 'wif'
-} : any) => {
+} : any) {
   // First, a shared secret is calculated based on the public and private keys.
   let publicKey, privateKey
   if (typeof senderPublicKey === 'string') {

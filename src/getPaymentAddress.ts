@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import bsv from 'babbage-bsv';
 
 const BN = bsv.crypto.BN
@@ -15,12 +16,12 @@ const G = bsv.crypto.Point.getG()
  *
  * @returns {String} The destination address or public key
  */
-module.exports = ({
+export function getPaymentAddress({
   senderPrivateKey,
   recipientPublicKey,
   invoiceNumber,
   returnType = 'address'
-} : any) => {
+} : any) {
   // First, a shared secret is calculated based on the public and private keys.
   let publicKey, privateKey
   if (typeof recipientPublicKey === 'string') {

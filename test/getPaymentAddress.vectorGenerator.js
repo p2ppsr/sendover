@@ -1,5 +1,5 @@
-const getPaymentAddress = require('../out/src/getPaymentAddress')
-const generateKeypair = require('../out/src/generateKeypair')
+const { getPaymentAddress } = require('../out/src/getPaymentAddress')
+const { generateKeypair } = require('../out/src/generateKeypair')
 
 const vectors = []
 for (let i = 0; i < 5; i++) {

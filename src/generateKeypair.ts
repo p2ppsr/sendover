@@ -8,7 +8,7 @@ import bsv from 'babbage-bsv';
  *
  * @returns {Object} The generated keypair, with `privateKey` and `publicKey` properties.
  */
-module.exports = ({ returnType = 'hex' } = {}) => {
+export function generateKeypair({ returnType = 'hex' } = {}) {
   const privateKey = bsv.PrivateKey.fromRandom()
   if (returnType === 'babbage-bsv') {
     return {
