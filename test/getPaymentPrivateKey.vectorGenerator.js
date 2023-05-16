@@ -1,5 +1,5 @@
-const getPaymentPrivateKey = require('../../lib/getPaymentPrivateKey')
-const generateKeypair = require('../../lib/generateKeypair')
+const getPaymentPrivateKey = require('../out/src/getPaymentPrivateKey')
+const generateKeypair = require('../out/src/generateKeypair')
 
 const generateTestVectors = () => {
   const vectors = []

@@ -2,18 +2,19 @@
   "name": "sendover",
   "version": "1.1.6",
   "description": "Tools for creating and paying invoices privately on Bitcoin SV",
-  "main": "lib/index.js",
+  "main": "./out/src/index.js",
+  "types": "./out/src/index.d.ts",
   "files": [
-    "lib/",
-    "src/__types/"
+    "out",
+    "src"
   ],
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watch",
     "doc": "documentation readme src/index.js --section=API",
     "lint": "standard --fix .",
-    "tsc": "tsc -p tsconfig.json",
-    "prepublish": "npm run tsc"
+    "build": "tsc -p tsconfig.json",
+    "prepublish": "npm run build"
   },
   "repository": {
     "type": "git",
@@ -33,11 +34,15 @@
   },
   "homepage": "https://github.com/p2ppsr/sendover#readme",
   "devDependencies": {
+    "@types/bn.js": "^5.1.1",
     "@types/node": "^18.7.4",
+    "@typescript-eslint/eslint-plugin": "^5.52.0",
+    "@typescript-eslint/parser": "^5.52.0",
+    "eslint": "^8.34.0",
     "documentation": "^13.2.5",
     "jest": "^26.6.3",
     "standard": "^16.0.3",
-    "typescript": "^4.7.4"
+    "typescript": "^4.9.5"
   },
   "dependencies": {
     "babbage-bsv": "^0.1.1"
