@@ -74,6 +74,52 @@ describe('getPaymentAddress', () => {
     })
     expect(firstResult).not.toEqual(secondResult)
   })
+  it('Reveals the same counterparty linkage information across two invoice numbers', () => {
+    const senderKeypair = generateKeypair()
+    const recipientKeypair = generateKeypair()
+    const firstInvoiceNumber = require('crypto')
+      .randomBytes(8)
+      .toString('base64')
+    const firstResult = getPaymentAddress({
+      senderPrivateKey: senderKeypair.privateKey,
+      recipientPublicKey: recipientKeypair.publicKey,
+      invoiceNumber: firstInvoiceNumber,
+      revealCounterpartyLinkage: true
+    })
+    const secondInvoiceNumber = require('crypto')
+      .randomBytes(8)
+      .toString('base64')
+    const secondResult = getPaymentAddress({
+      senderPrivateKey: senderKeypair.privateKey,
+      recipientPublicKey: recipientKeypair.publicKey,
+      invoiceNumber: secondInvoiceNumber,
+      revealCounterpartyLinkage: true
+    })
+    expect(firstResult).toEqual(secondResult)
+  })
+  it('Reveals different payment linkage information across two invoice numbers', () => {
+    const senderKeypair = generateKeypair()
+    const recipientKeypair = generateKeypair()
+    const firstInvoiceNumber = require('crypto')
+      .randomBytes(8)
+      .toString('base64')
+    const firstResult = getPaymentAddress({
+      senderPrivateKey: senderKeypair.privateKey,
+      recipientPublicKey: recipientKeypair.publicKey,
+      invoiceNumber: firstInvoiceNumber,
+      revealPaymentLinkage: true
+    })
+    const secondInvoiceNumber = require('crypto')
+      .randomBytes(8)
+      .toString('base64')
+    const secondResult = getPaymentAddress({
+      senderPrivateKey: senderKeypair.privateKey,
+      recipientPublicKey: recipientKeypair.publicKey,
+      invoiceNumber: secondInvoiceNumber,
+      revealPaymentLinkage: true
+    })
+    expect(firstResult).not.toEqual(secondResult)
+  })
   testVectors.forEach((vector, index) => {
     it(`Passes test vector #${index + 1}`, () => {
       expect(getPaymentAddress({

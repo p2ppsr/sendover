@@ -111,6 +111,52 @@ describe('getPaymentPrivateKey', () => {
     })
     expect(firstResult).not.toEqual(secondResult)
   })
+  it('Reveals the same counterparty linkage information with a different invoice number', () => {
+    const senderKeypair = generateKeypair()
+    const recipientKeypair = generateKeypair()
+    const firstInvoiceNumber = require('crypto')
+      .randomBytes(8)
+      .toString('base64')
+    const firstResult = getPaymentPrivateKey({
+      senderPublicKey: senderKeypair.publicKey,
+      recipientPrivateKey: recipientKeypair.privateKey,
+      invoiceNumber: firstInvoiceNumber,
+      revealCounterpartyLinkage: true
+    })
+    const secondInvoiceNumber = require('crypto')
+      .randomBytes(8)
+      .toString('base64')
+    const secondResult = getPaymentPrivateKey({
+      senderPublicKey: senderKeypair.publicKey,
+      recipientPrivateKey: recipientKeypair.privateKey,
+      invoiceNumber: secondInvoiceNumber,
+      revealCounterpartyLinkage: true
+    })
+    expect(firstResult).toEqual(secondResult)
+  })
+  it('Reveals different payment linkage information with a different invoice number', () => {
+    const senderKeypair = generateKeypair()
+    const recipientKeypair = generateKeypair()
+    const firstInvoiceNumber = require('crypto')
+      .randomBytes(8)
+      .toString('base64')
+    const firstResult = getPaymentPrivateKey({
+      senderPublicKey: senderKeypair.publicKey,
+      recipientPrivateKey: recipientKeypair.privateKey,
+      invoiceNumber: firstInvoiceNumber,
+      revealPaymentLinkage: true
+    })
+    const secondInvoiceNumber = require('crypto')
+      .randomBytes(8)
+      .toString('base64')
+    const secondResult = getPaymentPrivateKey({
+      senderPublicKey: senderKeypair.publicKey,
+      recipientPrivateKey: recipientKeypair.privateKey,
+      invoiceNumber: secondInvoiceNumber,
+      revealPaymentLinkage: true
+    })
+    expect(firstResult).not.toEqual(secondResult)
+  })
   // const testVectors = generateTestVectors()
   testVectors.forEach((vector, index) => {
     it(`Passes test vector #${index + 1}`, () => {

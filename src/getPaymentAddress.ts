@@ -12,6 +12,8 @@ const G = bsv.crypto.Point.getG()
  * @param params.senderPrivateKey The private key of the sender in WIF format
  * @param params.recipientPublicKey The public key of the recipient in hexadecimal DER format
  * @param params.invoiceNumber The invoice number to use
+ * @param params.revealCounterpartyLinkage=false When true, reveals the root shared secret between the two counterparties rather than performing key derivation, returning it as a hex string
+ * @param params.revealPaymentLinkage=false When true, reveals the secret between the two counterparties used for this specific invoice number, rather than performing key derivation. Returns the linkage as a hex string
  * @param params.returnType=address] The destination key return type, either `address` or `publicKey`
  *
  * @returns The destination address or public key
@@ -20,6 +22,8 @@ export function getPaymentAddress(params: {
   senderPrivateKey: string | bsv.crypto.BN | bsv.PrivateKey,
   recipientPublicKey: string | bsv.PublicKey,
   invoiceNumber: string,
+  revealCounterpartyLinkage: boolean,
+  revealPaymentLinkage: boolean,
   returnType?: 'address' | 'publicKey' | 'babbage-bsv'
 }): string | bsv.PublicKey {
 
@@ -42,12 +46,18 @@ export function getPaymentAddress(params: {
     throw new Error('Unrecognized format for senderPrivateKey')
   }
   const sharedSecret = publicKey.point.mul(privateKey).toBuffer()
+  if (params.revealCounterpartyLinkage) {
+    return sharedSecret.toString('hex')
+  }
 
   // The invoice number is turned into a buffer.
   const invoiceNumber = Buffer.from(String(params.invoiceNumber), 'utf8')
 
   // An HMAC is calculated with the shared secret and the invoice number.
   const hmac = Hash.sha256hmac(sharedSecret, invoiceNumber)
+  if (params.revealPaymentLinkage) {
+    return hmac.toString('hex')
+  }
 
   // The HMAC is multiplied by the generator point.
   const point = G.mul(BN.fromBuffer(hmac))
