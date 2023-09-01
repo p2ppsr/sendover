@@ -200,6 +200,57 @@ describe('deriveKey', () => {
       // The symmetric shared secret calculated by the counterparty should be identical to the one that was returned.
       expect(returnValue).toEqual(sharedSecret)
     })
+    it('Throws Error if counterparty secret revelation requested', () => {
+      expect(() => {
+        deriveKey({ ...params, revealCounterpartyLinkage: true })
+      }).toThrow(new Error(
+        'Counterparty secrets cannot be revealed for counterparty=self as specified by BRC-69'
+      ))
+    })
+    it('Throws Error if counterparty secret revelation requested, even if self public key is provided manually', () => {
+      const identity = getPaymentPrivateKey({
+        recipientPrivateKey: Buffer.from(key).toString('hex'),
+        senderPublicKey: bsv.PrivateKey.fromBuffer(Buffer.from(key))
+          .publicKey.toString(),
+        invoiceNumber: '1',
+        returnType: 'hex'
+      })
+      const identityPublicKey = bsv.PrivateKey.fromHex(identity)
+        .publicKey.toString()
+      expect(() => {
+        deriveKey({
+          ...params,
+          counterparty: identityPublicKey,
+          revealCounterpartyLinkage: true
+        })
+      }).toThrow(new Error(
+        'Counterparty secrets cannot be revealed for counterparty=self as specified by BRC-69'
+      ))
+    })
+    it('Reveals BRC-69 linkage for a specific key', () => {
+      const returnValue = deriveKey({
+        ...params,
+        revealPaymentLinkage: true
+      })
+      const identity = getPaymentPrivateKey({
+        recipientPrivateKey: Buffer.from(key).toString('hex'),
+        senderPublicKey: bsv.PrivateKey.fromBuffer(Buffer.from(key))
+          .publicKey.toString(),
+        invoiceNumber: '1',
+        returnType: 'hex'
+      })
+      // Derive our public key from the point-of-view of the counterparty
+      const invoiceNumber = getProtocolInvoiceNumber({ protocolID: params.protocolID, keyID: params.keyID })
+      const linkage = getPaymentAddress({
+        senderPrivateKey: identity,
+        recipientPublicKey: bsv.PrivateKey.fromHex(identity)
+          .publicKey.toString(),
+        invoiceNumber,
+        revealPaymentLinkage: true
+      })
+      // The linkage should match that derived
+      expect(returnValue).toEqual(linkage)
+    })
   })
   describe('When counterparty = anyone', () => {
     beforeEach(() => {
@@ -394,6 +445,52 @@ describe('deriveKey', () => {
       ).toBuffer().slice(1).toString('hex')
       // The symmetric shared secret calculated by the counterparty should be identical to the one that was returned.
       expect(returnValue).toEqual(sharedSecret)
+    })
+    it('Reveals BRC-69 linkage for the counterparty', () => {
+      const returnValue = deriveKey({
+        ...params,
+        revealCounterpartyLinkage: true
+      })
+      const identity = getPaymentPrivateKey({
+        recipientPrivateKey: Buffer.from(key).toString('hex'),
+        senderPublicKey: bsv.PrivateKey.fromBuffer(Buffer.from(key))
+          .publicKey.toString(),
+        invoiceNumber: '1',
+        returnType: 'hex'
+      })
+      // Derive our public key from the point-of-view of the counterparty
+      const invoiceNumber = getProtocolInvoiceNumber({ protocolID: params.protocolID, keyID: params.keyID })
+      const linkage = getPaymentAddress({
+        senderPrivateKey: identity,
+        recipientPublicKey: counterparty,
+        invoiceNumber,
+        revealCounterpartyLinkage: true
+      })
+      // The linkage should match that derived
+      expect(returnValue).toEqual(linkage)
+    })
+    it('Reveals BRC-69 linkage for the specific key', () => {
+      const returnValue = deriveKey({
+        ...params,
+        revealPaymentLinkage: true
+      })
+      const identity = getPaymentPrivateKey({
+        recipientPrivateKey: Buffer.from(key).toString('hex'),
+        senderPublicKey: bsv.PrivateKey.fromBuffer(Buffer.from(key))
+          .publicKey.toString(),
+        invoiceNumber: '1',
+        returnType: 'hex'
+      })
+      // Derive our public key from the point-of-view of the counterparty
+      const invoiceNumber = getProtocolInvoiceNumber({ protocolID: params.protocolID, keyID: params.keyID })
+      const linkage = getPaymentAddress({
+        senderPrivateKey: identity,
+        recipientPublicKey: counterparty,
+        invoiceNumber,
+        revealPaymentLinkage: true
+      })
+      // The linkage should match that derived
+      expect(returnValue).toEqual(linkage)
     })
   })
 })

@@ -35,7 +35,9 @@ export function deriveKey ({
   protocolID,
   keyID,
   deriveFromRoot = true,
-  derivationIdentity = '1'
+  derivationIdentity = '1',
+  revealCounterpartyLinkage = false,
+  revealPaymentLinkage = false
 }) {
   if (rootKey) {
     if (publicKey) {
@@ -68,6 +70,9 @@ export function deriveKey ({
   if (!counterparty) {
     throw new Error('counterparty must be self, anyone or a public key!')
   } else if (counterparty === 'self') {
+    if (revealCounterpartyLinkage) {
+      throw new Error('Counterparty secrets cannot be revealed for counterparty=self as specified by BRC-69')
+    }
     counterparty = bsv.PrivateKey.fromBuffer(identity.toBuffer({ size: 32 })).publicKey
   } else if (counterparty === 'anyone') {
     if (sharedSymmetricKey) {
@@ -80,6 +85,27 @@ export function deriveKey ({
     ).publicKey
   }
 
+  // If the counterparty secret is requested, it's worth making absolutely certain this is not counterparty=self, even if passed in manually
+  // This process ensures that whatever formats the keys are in, if the derivations produce the same child keys, the counterparty secret is not evealed
+  if (revealCounterpartyLinkage) {
+    const self = bsv.PrivateKey.fromBuffer(identity.toBuffer({ size: 32 })).publicKey
+    const keyDerivedBySelf = getPaymentPrivateKey({
+      recipientPrivateKey: identity,
+      senderPublicKey: self,
+      invoiceNumber: 'test',
+      returnType: 'hex'
+    })
+    const keyDerivedByCounterparty = getPaymentPrivateKey({
+      recipientPrivateKey: identity,
+      senderPublicKey: counterparty,
+      invoiceNumber: 'test',
+      returnType: 'hex'
+    })
+    if (keyDerivedBySelf === keyDerivedByCounterparty) {
+      throw new Error('Counterparty secrets cannot be revealed for counterparty=self as specified by BRC-69')
+    }
+  }
+
   protocolID = normalizeProtocol(protocolID)
   const invoiceNumber = getProtocolInvoiceNumber({ protocolID, keyID })
 
@@ -90,16 +116,26 @@ export function deriveKey ({
         recipientPrivateKey: identity,
         senderPublicKey: counterparty,
         invoiceNumber,
-        returnType: 'babbage-bsv'
+        returnType: 'babbage-bsv',
+        revealCounterpartyLinkage,
+        revealPaymentLinkage
       })
+      if (revealCounterpartyLinkage || revealPaymentLinkage) {
+        return ourPrivateKey
+      }
       return bsv.PrivateKey.fromBuffer(ourPrivateKey.toBuffer({ size: 32 })).publicKey.toString()
     } else {
       derivedPublicKey = getPaymentAddress({
         senderPrivateKey: identity,
         recipientPublicKey: counterparty,
         invoiceNumber,
-        returnType: 'babbage-bsv'
+        returnType: 'babbage-bsv',
+        revealCounterpartyLinkage,
+        revealPaymentLinkage
       })
+      if (revealCounterpartyLinkage || revealPaymentLinkage) {
+        return derivedPublicKey
+      }
     }
   }
   if (publicKey) {
@@ -112,8 +148,13 @@ export function deriveKey ({
     recipientPrivateKey: identity,
     senderPublicKey: counterparty,
     invoiceNumber,
-    returnType: 'babbage-bsv'
+    returnType: 'babbage-bsv',
+    revealCounterpartyLinkage,
+    revealPaymentLinkage
   })
+  if (revealCounterpartyLinkage || revealPaymentLinkage) {
+    return derivedPrivateKey
+  }
   if (!sharedSymmetricKey) {
     return derivedPrivateKey.toHex({ size: 32 })
   }
