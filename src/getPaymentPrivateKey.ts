@@ -21,8 +21,8 @@ export function getPaymentPrivateKey(params: {
   recipientPrivateKey: string | bsv.crypto.BN | bsv.PrivateKey,
   senderPublicKey: string | bsv.PublicKey,
   invoiceNumber: string,
-  revealCounterpartyLinkage: boolean,
-  revealPaymentLinkage: boolean,
+  revealCounterpartyLinkage?: boolean,
+  revealPaymentLinkage?: boolean,
   returnType?: 'wif' | 'hex' | 'buffer' | 'babbage-bsv'
 }) : string | Buffer | bsv.PrivateKey {
   if (!params.returnType) params.returnType = 'wif'

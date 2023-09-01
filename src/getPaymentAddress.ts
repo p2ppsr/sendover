@@ -22,8 +22,8 @@ export function getPaymentAddress(params: {
   senderPrivateKey: string | bsv.crypto.BN | bsv.PrivateKey,
   recipientPublicKey: string | bsv.PublicKey,
   invoiceNumber: string,
-  revealCounterpartyLinkage: boolean,
-  revealPaymentLinkage: boolean,
+  revealCounterpartyLinkage?: boolean,
+  revealPaymentLinkage?: boolean,
   returnType?: 'address' | 'publicKey' | 'babbage-bsv'
 }): string | bsv.PublicKey {
 
