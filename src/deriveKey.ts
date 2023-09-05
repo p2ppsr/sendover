@@ -3,42 +3,104 @@ import { getProtocolInvoiceNumber, normalizeProtocol } from 'cwi-base'
 import bsv from 'babbage-bsv'
 
 /**
+ * Input params to the `deriveKey` function.
+ *
+ * This function derives the child key given the root key.
+ *
+ * The flags:
+ *
+ *   rootKey, identityKey, publicKey, and sharedSymmetricKey flags
+ *
+ * can be combined with:
+ *
+ *    counterparty, protocolID and keyID
+ *
+ * to derive the required key.
+ */
+export interface SendOverDeriveKeyParams {
+  /*
+   * The root key for derivation
+   */
+  key: Uint8Array
+  /*
+   * The counterparty to use for derivation. Can be "self", "anyone", or the public key of a counterparty.
+   *
+   * public key must be a babbage-bsv PublicKey object.
+   *
+   * Only the counterparty can derive the corresponding private keys for asymmetric operations,
+   * or the corresponding shared symmetric key in symmetric operations.
+   */
+  counterparty: 'self' | 'anyone' | bsv.PublicKey
+  /*
+   * The protocol under which this key is used.
+   */
+  protocolID: string | [number, string]
+  /*
+   * The specific key to derive under this protocol.
+   */
+  keyID: string
+  /*
+   * Optional, defaults to '1'. The identity under which key derivation should occur (default 1)
+   */
+  derivationIdentity: string
+  /*
+   * Optional, defaults to false. Whether the root key should be returned
+   */
+  rootKey?: boolean
+  /*
+   * Optional, defaults to false. Whether the identity key should be returned, only works if rootKey = false
+   */
+  identityKey?: boolean
+  /*
+   * Optional, defaults to false. Whether a public key should be derived
+   */
+  publicKey?: boolean
+  /*
+   * Optional, defaults to false. Whether the derived key corresponds to a private key held by the current user.
+   */
+  forSelf?: boolean
+  /*
+   * Optional, defaults to false. Whether a shared symmetric key should be returned. Cannot be used when publicKey = true
+   */
+  sharedSymmetricKey?: boolean
+  /*
+   * Whether to derive from the root key, rather than the provided identity (default true)
+   */
+  deriveFromRoot?: boolean
+  /**
+   *
+   */
+  revealCounterpartyLinkage?: boolean
+  /**
+   * Optional, defaults to false.
+   */
+  revealPaymentLinkage?: boolean
+}
+
+/**
  * This function derives the child key given the root key. The rootKey,
  * identityKey, publicKey, and sharedSymmetricKey flags can be combined with
  * counterparty, protocolID and keyID to derive the needed keys.
  *
- * @param {Object} obj All parameters are given in an object
- * @param {Uint8Array} obj.key The root key for derivation
- * @param {Boolean} [obj.rootKey=false] Whether the root key should be returned
- * @param {Boolean} [obj.publicKey=false] Whether a public key should be derived
- * @param {Boolean} [obj.forSelf=false] Whether the derived key corresponds to
- * a private key held by the current user.
- * @param {Boolean} [obj.identityKey=false] Whether the identity key should be
- * returned, only works if rootKey = false
- * @param {Boolean} [obj.sharedSymmetricKey=false] Whether a shared symmetric key should be returned. Cannot be used when publicKey = true
- * @param {String} [obj.counterparty] The counterparty to use for derivation. Can be "self", "anyone", or the public key of a counterparty. Only the counterparty can derive the corresponding private keys for asymmetric operations, or the corresponding shared symmetric key in symmetric operations.
- * @param {String} [obj.protocolID] The protocol under which this key is used.
- * @param {String} [obj.keyID] The specific key to derive under this protocol.
- * @param {Boolean} [obj.deriveFromRoot] Whether to derive from the root key, rather than the provided identity (default true)
- * @param {String} [obj.derivationIdentity=1] The identity under which key derivation should occur (default 1)
- * @return {String} Hex string of key to return
- * @private
+ * @return Hex string of key to return
  */
-export function deriveKey ({
-  key,
-  rootKey,
-  identityKey,
-  publicKey,
-  forSelf = false,
-  sharedSymmetricKey,
-  counterparty,
-  protocolID,
-  keyID,
-  deriveFromRoot = true,
-  derivationIdentity = '1',
-  revealCounterpartyLinkage = false,
-  revealPaymentLinkage = false
-}) {
+export function deriveKey (params: SendOverDeriveKeyParams): string {
+  let counterparty = params.counterparty
+  const {
+    key,
+    protocolID,
+    keyID,
+    derivationIdentity = '1',
+    rootKey = false,
+    identityKey = false,
+    publicKey = false,
+    forSelf = false,
+    sharedSymmetricKey = false,
+    deriveFromRoot = true,
+    revealCounterpartyLinkage = false,
+    revealPaymentLinkage = false
+  } = params
+
   if (rootKey) {
     if (publicKey) {
       return bsv.PrivateKey.fromBuffer(Buffer.from(key))
@@ -67,7 +129,7 @@ export function deriveKey ({
     }
   }
 
-  if (!counterparty) {
+  if (counterparty !== 'self' && counterparty !== 'anyone' && !(counterparty instanceof bsv.PublicKey)) {
     throw new Error('counterparty must be self, anyone or a public key!')
   } else if (counterparty === 'self') {
     if (revealCounterpartyLinkage) {
@@ -106,8 +168,8 @@ export function deriveKey ({
     }
   }
 
-  protocolID = normalizeProtocol(protocolID)
-  const invoiceNumber = getProtocolInvoiceNumber({ protocolID, keyID })
+  const normalizedProtocolID = normalizeProtocol(protocolID)
+  const invoiceNumber = getProtocolInvoiceNumber({ protocolID: normalizedProtocolID, keyID })
 
   let derivedPublicKey
   if (sharedSymmetricKey || publicKey) {

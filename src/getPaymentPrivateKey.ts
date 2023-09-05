@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import bsv from 'babbage-bsv';
+import bsv from 'babbage-bsv'
 const BN = bsv.crypto.BN
 const Hash = bsv.crypto.Hash
 const N = bsv.crypto.Point.getN()
@@ -17,15 +17,15 @@ const N = bsv.crypto.Point.getN()
  *
  * @returns The incoming payment key that can unlock the money.
  */
-export function getPaymentPrivateKey(params: {
-  recipientPrivateKey: string | bsv.crypto.BN | bsv.PrivateKey,
-  senderPublicKey: string | bsv.PublicKey,
-  invoiceNumber: string,
-  revealCounterpartyLinkage?: boolean,
-  revealPaymentLinkage?: boolean,
+export function getPaymentPrivateKey (params: {
+  recipientPrivateKey: string | bsv.crypto.BN | bsv.PrivateKey
+  senderPublicKey: string | bsv.PublicKey
+  invoiceNumber: string
+  revealCounterpartyLinkage?: boolean
+  revealPaymentLinkage?: boolean
   returnType?: 'wif' | 'hex' | 'buffer' | 'babbage-bsv'
-}) : string | Buffer | bsv.PrivateKey {
-  if (!params.returnType) params.returnType = 'wif'
+}): string | Buffer | bsv.PrivateKey {
+  if (params.returnType === undefined) params.returnType = 'wif'
 
   // First, a shared secret is calculated based on the public and private keys.
   let publicKey: bsv.PublicKey, privateKey: bsv.PrivateKey
@@ -49,7 +49,7 @@ export function getPaymentPrivateKey(params: {
   }
 
   const sharedSecret = publicKey.point.mul(privateKey).toBuffer()
-  if (params.revealCounterpartyLinkage) {
+  if (params.revealCounterpartyLinkage === true) {
     return sharedSecret.toString('hex')
   }
 
@@ -58,7 +58,7 @@ export function getPaymentPrivateKey(params: {
 
   // An HMAC is calculated with the shared secret and the invoice number.
   const hmac = Hash.sha256hmac(sharedSecret, invoiceNumber)
-  if (params.revealPaymentLinkage) {
+  if (params.revealPaymentLinkage === true) {
     return hmac.toString('hex')
   }
 

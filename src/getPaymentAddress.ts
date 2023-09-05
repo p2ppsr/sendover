@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import bsv from 'babbage-bsv';
+import bsv from 'babbage-bsv'
 
 const BN = bsv.crypto.BN
 const Hash = bsv.crypto.Hash
@@ -18,15 +18,14 @@ const G = bsv.crypto.Point.getG()
  *
  * @returns The destination address or public key
  */
-export function getPaymentAddress(params: {
-  senderPrivateKey: string | bsv.crypto.BN | bsv.PrivateKey,
-  recipientPublicKey: string | bsv.PublicKey,
-  invoiceNumber: string,
-  revealCounterpartyLinkage?: boolean,
-  revealPaymentLinkage?: boolean,
+export function getPaymentAddress (params: {
+  senderPrivateKey: string | bsv.crypto.BN | bsv.PrivateKey
+  recipientPublicKey: string | bsv.PublicKey
+  invoiceNumber: string
+  revealCounterpartyLinkage?: boolean
+  revealPaymentLinkage?: boolean
   returnType?: 'address' | 'publicKey' | 'babbage-bsv'
 }): string | bsv.PublicKey {
-
   // First, a shared secret is calculated based on the public and private keys.
   let publicKey: bsv.PublicKey, privateKey: bsv.PrivateKey
   if (typeof params.recipientPublicKey === 'string') {
@@ -46,7 +45,7 @@ export function getPaymentAddress(params: {
     throw new Error('Unrecognized format for senderPrivateKey')
   }
   const sharedSecret = publicKey.point.mul(privateKey).toBuffer()
-  if (params.revealCounterpartyLinkage) {
+  if (params.revealCounterpartyLinkage === true) {
     return sharedSecret.toString('hex')
   }
 
@@ -55,7 +54,7 @@ export function getPaymentAddress(params: {
 
   // An HMAC is calculated with the shared secret and the invoice number.
   const hmac = Hash.sha256hmac(sharedSecret, invoiceNumber)
-  if (params.revealPaymentLinkage) {
+  if (params.revealPaymentLinkage === true) {
     return hmac.toString('hex')
   }
 
@@ -68,7 +67,7 @@ export function getPaymentAddress(params: {
   )
 
   // Finally, an address is calculated with the new public key.
-  if (!params.returnType || params.returnType === 'address') {
+  if (params.returnType === undefined || params.returnType === 'address') {
     return bsv.Address.fromPublicKey(finalPublicKey).toString()
   } else if (params.returnType === 'publicKey') {
     return finalPublicKey.toString()

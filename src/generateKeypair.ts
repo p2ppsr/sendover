@@ -1,4 +1,4 @@
-import bsv from 'babbage-bsv';
+import bsv from 'babbage-bsv'
 
 /**
  * Generates a public/private keypair for the sending and receiving of invoices.
@@ -8,11 +8,11 @@ import bsv from 'babbage-bsv';
  *
  * @returns The generated keypair, with `privateKey` and `publicKey` properties.
  */
-export function generateKeypair(params?: { returnType?: 'hex' | 'babbage-bsv' }
-) : {
-  privateKey: string | bsv.PrivateKey,
-  publicKey: string | bsv.PublicKey
-} {
+export function generateKeypair (params?: { returnType?: 'hex' | 'babbage-bsv' }
+): {
+    privateKey: string | bsv.PrivateKey
+    publicKey: string | bsv.PublicKey
+  } {
   params ||= {}
   params.returnType ||= 'hex'
 
