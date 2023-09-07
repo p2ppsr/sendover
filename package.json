@@ -12,7 +12,7 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "doc": "typedoc src",
-    "lint": "ts-standard --fix src/**/*.ts",
+    "lint": "ts-standard src/**/*.ts",
     "build": "tsc -p tsconfig.json",
     "prepublish": "npm run build"
   },
