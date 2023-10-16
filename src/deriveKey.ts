@@ -30,7 +30,7 @@ export interface SendOverDeriveKeyParams {
    * Only the counterparty can derive the corresponding private keys for asymmetric operations,
    * or the corresponding shared symmetric key in symmetric operations.
    */
-  counterparty: 'self' | 'anyone' | bsv.PublicKey
+  counterparty: string | 'self' | 'anyone' | bsv.PublicKey
   /*
    * The protocol under which this key is used.
    */
@@ -130,7 +130,7 @@ export function deriveKey (params: SendOverDeriveKeyParams): string {
     }
   }
 
-  if (counterparty !== 'self' && counterparty !== 'anyone' && !(counterparty instanceof bsv.PublicKey)) {
+  if (!counterparty) {
     throw new Error('counterparty must be self, anyone or a public key!')
   } else if (counterparty === 'self') {
     if (revealCounterpartyLinkage) {
