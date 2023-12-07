@@ -61,8 +61,6 @@ Links: [API](#api), [Interfaces](#interfaces), [Functions](#functions)
 
 #### Interface: SendOverDeriveKeyParams
 
-##### Description
-
 Input params to the `deriveKey` function.
 
 This function derives the child key given the root key.
@@ -80,7 +78,7 @@ to derive the required key.
 ```ts
 export interface SendOverDeriveKeyParams {
     key: Uint8Array;
-    counterparty: "self" | "anyone" | bsv.PublicKey;
+    counterparty: string | "self" | "anyone" | bsv.PublicKey;
     protocolID: string | [
         number,
         string
@@ -100,13 +98,15 @@ export interface SendOverDeriveKeyParams {
 
 <details>
 
-<summary>Interface SendOverDeriveKeyParams Member Details</summary>
+<summary>Interface SendOverDeriveKeyParams Details</summary>
 
-###### revealCounterpartyLinkage
-
-###### revealPaymentLinkage
+##### Property revealPaymentLinkage
 
 Optional, defaults to false.
+
+```ts
+revealPaymentLinkage?: boolean
+```
 
 </details>
 
@@ -128,8 +128,6 @@ Links: [API](#api), [Interfaces](#interfaces), [Functions](#functions)
 
 #### Function: generateKeypair
 
-##### Description
-
 Generates a public/private keypair for the sending and receiving of invoices.
 
 ```ts
@@ -141,26 +139,27 @@ export function generateKeypair(params?: {
 } 
 ```
 
-##### Returns
+<details>
+
+<summary>Function generateKeypair Details</summary>
+
+Returns
 
 The generated keypair, with `privateKey` and `publicKey` properties.
 
-<details>
+Argument Details
 
-<summary>Function generateKeypair Argument Details</summary>
++ **params**
+  + All parameters are given in an object
++ **params.returnType**
+  + ='hex' Return type, either "hex" or "babbage-bsv"
 
-###### params
-
-All parameters are given in an object###### params.returnType
-
-='hex' Return type, either "hex" or "babbage-bsv"</details>
+</details>
 
 Links: [API](#api), [Interfaces](#interfaces), [Functions](#functions)
 
 ---
 #### Function: getPaymentAddress
-
-##### Description
 
 Returns a payment address for use by the sender, given the recipient's public key, the sender's private key and the invoice number.
 
@@ -175,36 +174,37 @@ export function getPaymentAddress(params: {
 }): string | bsv.PublicKey 
 ```
 
-##### Returns
+<details>
+
+<summary>Function getPaymentAddress Details</summary>
+
+Returns
 
 The destination address or public key
 
-<details>
+Argument Details
 
-<summary>Function getPaymentAddress Argument Details</summary>
++ **params**
+  + All parameters are provided in an object
++ **params.senderPrivateKey**
+  + The private key of the sender in WIF format
++ **params.recipientPublicKey**
+  + The public key of the recipient in hexadecimal DER format
++ **params.invoiceNumber**
+  + The invoice number to use
++ **params.revealCounterpartyLinkage**
+  + =false When true, reveals the root shared secret between the two counterparties rather than performing key derivation, returning it as a hex string
++ **params.revealPaymentLinkage**
+  + =false When true, reveals the secret between the two counterparties used for this specific invoice number, rather than performing key derivation. Returns the linkage as a hex string
++ **params.returnType**
+  + =address] The destination key return type, either `address` or `publicKey`
 
-###### params
-
-All parameters are provided in an object###### params.senderPrivateKey
-
-The private key of the sender in WIF format###### params.recipientPublicKey
-
-The public key of the recipient in hexadecimal DER format###### params.invoiceNumber
-
-The invoice number to use###### params.revealCounterpartyLinkage
-
-=false When true, reveals the root shared secret between the two counterparties rather than performing key derivation, returning it as a hex string###### params.revealPaymentLinkage
-
-=false When true, reveals the secret between the two counterparties used for this specific invoice number, rather than performing key derivation. Returns the linkage as a hex string###### params.returnType
-
-=address] The destination key return type, either `address` or `publicKey`</details>
+</details>
 
 Links: [API](#api), [Interfaces](#interfaces), [Functions](#functions)
 
 ---
 #### Function: getPaymentPrivateKey
-
-##### Description
 
 Returns a private key for use by the recipient, given the sender's public key, the recipient's private key and the invoice number.
 
@@ -219,36 +219,37 @@ export function getPaymentPrivateKey(params: {
 }): string | Buffer | bsv.PrivateKey 
 ```
 
-##### Returns
+<details>
+
+<summary>Function getPaymentPrivateKey Details</summary>
+
+Returns
 
 The incoming payment key that can unlock the money.
 
-<details>
+Argument Details
 
-<summary>Function getPaymentPrivateKey Argument Details</summary>
++ **params**
+  + All parametera ere provided in an object
++ **params.recipientPrivateKey**
+  + The private key of the recipient in WIF format
++ **params.senderPublicKey**
+  + The public key of the sender in hexadecimal DER format
++ **params.invoiceNumber**
+  + The invoice number that was used
++ **params.revealCounterpartyLinkage**
+  + =false When true, reveals the root shared secret between the two counterparties rather than performing key derivation, returning it as a hex string
++ **params.revealPaymentLinkage**
+  + =false When true, reveals the secret between the two counterparties used for this specific invoice number, rather than performing key derivation. Returns the linkage as a hex string
++ **params.returnType**
+  + =wif The incoming payment key return type, either `wif` or `hex`
 
-###### params
-
-All parametera ere provided in an object###### params.recipientPrivateKey
-
-The private key of the recipient in WIF format###### params.senderPublicKey
-
-The public key of the sender in hexadecimal DER format###### params.invoiceNumber
-
-The invoice number that was used###### params.revealCounterpartyLinkage
-
-=false When true, reveals the root shared secret between the two counterparties rather than performing key derivation, returning it as a hex string###### params.revealPaymentLinkage
-
-=false When true, reveals the secret between the two counterparties used for this specific invoice number, rather than performing key derivation. Returns the linkage as a hex string###### params.returnType
-
-=wif The incoming payment key return type, either `wif` or `hex`</details>
+</details>
 
 Links: [API](#api), [Interfaces](#interfaces), [Functions](#functions)
 
 ---
 #### Function: deriveKey
-
-##### Description
 
 This function derives the child key given the root key.
 
@@ -259,9 +260,15 @@ counterparty, protocolID and keyID to derive the needed keys.
 export function deriveKey(params: SendOverDeriveKeyParams): string 
 ```
 
-##### Returns
+<details>
+
+<summary>Function deriveKey Details</summary>
+
+Returns
 
 Hex string of key to return
+
+</details>
 
 Links: [API](#api), [Interfaces](#interfaces), [Functions](#functions)
 
