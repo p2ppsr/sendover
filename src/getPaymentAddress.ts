@@ -79,27 +79,13 @@ export function getPaymentAddress (params: {
   }
 }
 
-/**
- * Returns a payment address for use by the sender, given the recipient's public key, the sender's private key and the invoice number.
- *
- * @param params All parameters are provided in an object
- * @param params.senderPrivateKey The private key of the sender in WIF format
- * @param params.recipientPublicKey The public key of the recipient in hexadecimal DER format
- * @param params.invoiceNumber The invoice number to use
- * @param params.revealCounterpartyLinkage=false When true, reveals the root shared secret between the two counterparties rather than performing key derivation, returning it as a hex string
- * @param params.revealPaymentLinkage=false When true, reveals the secret between the two counterparties used for this specific invoice number, rather than performing key derivation. Returns the linkage as a hex string
- * @param params.returnType=address] The destination key return type, either `address` or `publicKey`
- *
- * @returns The destination address or public key
- */
-export function getPaymentAddressTs (params: {
+export function computePaymentContext(params: {
   senderPrivateKey: string | bsv.Bn | bsv.PrivKey
   recipientPublicKey: string | bsv.PubKey
   invoiceNumber: string
-  revealCounterpartyLinkage?: boolean
-  revealPaymentLinkage?: boolean
-  returnType?: 'address' | 'publicKey' | 'cwi-bitcoin'
-}): string | bsv.PubKey {
+})
+: { publicKey: bsv.PubKey, sharedSecret: Buffer, hmac: Buffer }
+{
   // First, a shared secret is calculated based on the public and private keys.
   let publicKey: bsv.PubKey, privateKey: bsv.Bn
   if (typeof params.recipientPublicKey === 'string') {
@@ -118,36 +104,74 @@ export function getPaymentAddressTs (params: {
   } else {
     throw new Error('Unrecognized format for senderPrivateKey')
   }
-  const sharedSecret = publicKey.point.mul(privateKey) //.to.toBuffer()
-  if (params.revealCounterpartyLinkage === true) {
-    return sharedSecret.toString('hex')
-  }
+  const sharedSecret = publicKey.point.mul(privateKey).toBuffer()
 
   // The invoice number is turned into a buffer.
-  const invoiceNumber = Buffer.from(String(params.invoiceNumber), 'utf8')
+  const invoiceBuffer = Buffer.from(String(params.invoiceNumber), 'utf8')
 
   // An HMAC is calculated with the shared secret and the invoice number.
-  const hmac = Hash.sha256hmac(sharedSecret, invoiceNumber)
-  if (params.revealPaymentLinkage === true) {
-    return hmac.toString('hex')
-  }
+  const hmac = bsv.Hash.sha256Hmac(sharedSecret, invoiceBuffer)
+
+  const G = bsv.Point.getG()
 
   // The HMAC is multiplied by the generator point.
   const point = G.mul(bsv.Bn.fromBuffer(hmac))
 
   // The resulting point is added to the recipient public key.
-  const finalPublicKey = bsvJs.PublicKey.fromPoint(
-    publicKey.point.add(point)
+  const resultPublicKey = new bsv.PubKey(
+    publicKey.point.add(point), true
   )
 
-  // Finally, an address is calculated with the new public key.
-  if (params.returnType === undefined || params.returnType === 'address') {
-    return bsvJs.Address.fromPublicKey(finalPublicKey).toString()
-  } else if (params.returnType === 'publicKey') {
-    return finalPublicKey.toString()
-  } else if (params.returnType === 'babbage-bsv') {
-    return finalPublicKey
-  } else {
-    throw new Error('The return type must either be "address" or "publicKey"')
-  }
+  return { publicKey: resultPublicKey, sharedSecret, hmac }
+}
+
+/**
+ * @param params All parameters are provided in an object
+ * @param params.senderPrivateKey The private key of the sender in WIF format
+ * @param params.recipientPublicKey The public key of the recipient in hexadecimal DER format
+ * @param params.invoiceNumber The invoice number to use
+ *
+ * @returns The destination public key
+ */
+export function getPaymentPubKey (params: {
+  senderPrivateKey: string | bsv.Bn | bsv.PrivKey
+  recipientPublicKey: string | bsv.PubKey
+  invoiceNumber: string
+}): bsv.PubKey {
+  const { publicKey } = computePaymentContext(params)
+
+  return publicKey
+}
+
+/**
+ * @param params All parameters are provided in an object
+ * @param params.senderPrivateKey The private key of the sender in WIF format
+ * @param params.recipientPublicKey The public key of the recipient in hexadecimal DER format
+ * @param params.invoiceNumber The invoice number to use
+ *
+ * @returns The destination public key Base58 string
+ */
+export function getPaymentPubKeyString (params: {
+  senderPrivateKey: string | bsv.Bn | bsv.PrivKey
+  recipientPublicKey: string | bsv.PubKey
+  invoiceNumber: string
+}): string {
+  return getPaymentPubKey(params).toString()
+}
+
+/**
+ * @param params All parameters are provided in an object
+ * @param params.senderPrivateKey The private key of the sender in WIF format
+ * @param params.recipientPublicKey The public key of the recipient in hexadecimal DER format
+ * @param params.invoiceNumber The invoice number to use
+ *
+ * @returns The destination address as Base58 string
+ */
+export function getPaymentAddressString (params: {
+  senderPrivateKey: string | bsv.Bn | bsv.PrivKey
+  recipientPublicKey: string | bsv.PubKey
+  invoiceNumber: string
+}): string {
+  const pubKey = getPaymentPubKey(params)
+  return bsv.Address.fromPubKey(pubKey).toString()
 }
