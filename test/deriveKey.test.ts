@@ -1,9 +1,8 @@
-/* eslint-env jest */
-const { deriveKey } = require('../out/src/deriveKey')
-const { getPaymentAddress } = require('../out/src/getPaymentAddress')
-const { getPaymentPrivateKey } = require('../out/src/getPaymentPrivateKey')
-const bsv = require('babbage-bsv')
-const { getProtocolInvoiceNumber } = require('cwi-base')
+import { deriveKey } from '../out/src/deriveKey'
+import { getPaymentAddress } from '../out/src/getPaymentAddress'
+import { getPaymentPrivateKey } from '../out/src/getPaymentPrivateKey'
+import bsvJs from 'babbage-bsv'
+import { getProtocolInvoiceNumber } from 'cwi-base'
 
 // A value for the key on which derivation is to be performed
 const key = Uint8Array.from([
@@ -12,9 +11,10 @@ const key = Uint8Array.from([
   131, 248, 10, 62, 102, 44, 184, 35,
   207, 194, 4, 109, 153, 59, 23, 18
 ])
+
 // A value for the counterparty's key
 const counterpartyPriv = '1e8226e9f542196333aa2c5da061a8f1c3e189f60493930d26be4b1d1704c27f'
-const counterparty = bsv.PrivateKey.fromHex(counterpartyPriv)
+const counterparty = bsvJs.PrivateKey.fromHex(counterpartyPriv)
   .publicKey.toString()
 // Anyone can know this key
 const anyone = '0000000000000000000000000000000000000000000000000000000000000001'
@@ -37,7 +37,7 @@ describe('deriveKey', () => {
   it('Returns the correct root public key', () => {
     const returnValue = deriveKey({ ...params, rootKey: true, publicKey: true })
     expect(returnValue).toEqual(
-      bsv.PrivateKey.fromHex(Buffer.from(key).toString('hex'))
+      bsvJs.PrivateKey.fromHex(Buffer.from(key).toString('hex'))
         .publicKey.toString()
     )
   })
@@ -57,7 +57,7 @@ describe('deriveKey', () => {
       deriveFromRoot: true
     })
     expect(returnValue).toEqual(
-      bsv.PrivateKey.fromHex(Buffer.from(key).toString('hex'))
+      bsvJs.PrivateKey.fromHex(Buffer.from(key).toString('hex'))
         .publicKey.toString()
     )
   })
@@ -69,7 +69,7 @@ describe('deriveKey', () => {
     })
     const identity = getPaymentPrivateKey({
       recipientPrivateKey: Buffer.from(key).toString('hex'),
-      senderPublicKey: bsv.PrivateKey.fromBuffer(Buffer.from(key))
+      senderPublicKey: bsvJs.PrivateKey.fromBuffer(Buffer.from(key))
         .publicKey.toString(),
       invoiceNumber: '1',
       returnType: 'hex'
@@ -85,13 +85,13 @@ describe('deriveKey', () => {
     })
     const identity = getPaymentPrivateKey({
       recipientPrivateKey: Buffer.from(key).toString('hex'),
-      senderPublicKey: bsv.PrivateKey.fromBuffer(Buffer.from(key))
+      senderPublicKey: bsvJs.PrivateKey.fromBuffer(Buffer.from(key))
         .publicKey.toString(),
       invoiceNumber: '1',
       returnType: 'hex'
     })
     expect(returnValue).toEqual(
-      bsv.PrivateKey.fromHex(identity)
+      bsvJs.PrivateKey.fromHex(identity)
         .publicKey.toString()
     )
   })
@@ -128,7 +128,7 @@ describe('deriveKey', () => {
       })
       const identity = getPaymentPrivateKey({
         recipientPrivateKey: Buffer.from(key).toString('hex'),
-        senderPublicKey: bsv.PrivateKey.fromBuffer(Buffer.from(key))
+        senderPublicKey: bsvJs.PrivateKey.fromBuffer(Buffer.from(key))
           .publicKey.toString(),
         invoiceNumber: '1',
         returnType: 'hex'
@@ -137,20 +137,20 @@ describe('deriveKey', () => {
       const invoiceNumber = getProtocolInvoiceNumber({ protocolID: params.protocolID, keyID: params.keyID })
       const correspondingPrivateKey = getPaymentPrivateKey({
         recipientPrivateKey: identity,
-        senderPublicKey: bsv.PrivateKey.fromHex(identity).publicKey.toString(),
+        senderPublicKey: bsvJs.PrivateKey.fromHex(identity).publicKey.toString(),
         invoiceNumber,
         returnType: 'hex'
       })
       // The public key from the key derived by the counterparty should be identical to the one that was returned by our derivation.
-      expect(returnValue).toEqual(bsv.PublicKey.fromPoint(
-        bsv.PrivateKey.fromHex(correspondingPrivateKey).publicKey.point
+      expect(returnValue).toEqual(bsvJs.PublicKey.fromPoint(
+        bsvJs.PrivateKey.fromHex(correspondingPrivateKey).publicKey.point
       ).toString())
     })
     it('Returns a properly-derived asymmetric private key', () => {
       const returnValue = deriveKey(params)
       const identity = getPaymentPrivateKey({
         recipientPrivateKey: Buffer.from(key).toString('hex'),
-        senderPublicKey: bsv.PrivateKey.fromBuffer(Buffer.from(key))
+        senderPublicKey: bsvJs.PrivateKey.fromBuffer(Buffer.from(key))
           .publicKey.toString(),
         invoiceNumber: '1',
         returnType: 'hex'
@@ -159,21 +159,21 @@ describe('deriveKey', () => {
       const invoiceNumber = getProtocolInvoiceNumber({ protocolID: params.protocolID, keyID: params.keyID })
       const correspondingPublicKey = getPaymentAddress({
         senderPrivateKey: identity,
-        recipientPublicKey: bsv.PrivateKey.fromHex(identity)
+        recipientPublicKey: bsvJs.PrivateKey.fromHex(identity)
           .publicKey.toString(),
         invoiceNumber,
         returnType: 'publicKey'
       })
       // The public key derived by the counterparty should be identical to the one from the private key that was returned by our derivation.
-      expect(bsv.PublicKey.fromPoint(
-        bsv.PrivateKey.fromHex(returnValue).publicKey.point
+      expect(bsvJs.PublicKey.fromPoint(
+        bsvJs.PrivateKey.fromHex(returnValue).publicKey.point
       ).toString()).toEqual(correspondingPublicKey)
     })
     it('Returns a properly-derived shared symmetric key', () => {
       const returnValue = deriveKey({ ...params, sharedSymmetricKey: true })
       const identity = getPaymentPrivateKey({
         recipientPrivateKey: Buffer.from(key).toString('hex'),
-        senderPublicKey: bsv.PrivateKey.fromBuffer(Buffer.from(key))
+        senderPublicKey: bsvJs.PrivateKey.fromBuffer(Buffer.from(key))
           .publicKey.toString(),
         invoiceNumber: '1',
         returnType: 'hex'
@@ -182,7 +182,7 @@ describe('deriveKey', () => {
       const invoiceNumber = getProtocolInvoiceNumber({ protocolID: params.protocolID, keyID: params.keyID })
       const correspondingPublicKey = getPaymentAddress({
         senderPrivateKey: identity,
-        recipientPublicKey: bsv.PrivateKey.fromHex(identity)
+        recipientPublicKey: bsvJs.PrivateKey.fromHex(identity)
           .publicKey.toString(),
         invoiceNumber,
         returnType: 'publicKey'
@@ -190,12 +190,12 @@ describe('deriveKey', () => {
       // Derive the private key from the point-of-view of the counterparty
       const correspondingPrivateKey = getPaymentPrivateKey({
         recipientPrivateKey: identity,
-        senderPublicKey: bsv.PrivateKey.fromHex(identity).publicKey.toString(),
+        senderPublicKey: bsvJs.PrivateKey.fromHex(identity).publicKey.toString(),
         invoiceNumber,
         returnType: 'hex'
       })
-      const sharedSecret = bsv.PublicKey.fromString(correspondingPublicKey).point.mul(
-        bsv.crypto.BN.fromHex(correspondingPrivateKey, { size: 32 })
+      const sharedSecret = bsvJs.PublicKey.fromString(correspondingPublicKey).point.mul(
+        bsvJs.crypto.BN.fromHex(correspondingPrivateKey, { size: 32 })
       ).toBuffer().slice(1).toString('hex')
       // The symmetric shared secret calculated by the counterparty should be identical to the one that was returned.
       expect(returnValue).toEqual(sharedSecret)
@@ -210,12 +210,12 @@ describe('deriveKey', () => {
     it('Throws Error if counterparty secret revelation requested, even if self public key is provided manually', () => {
       const identity = getPaymentPrivateKey({
         recipientPrivateKey: Buffer.from(key).toString('hex'),
-        senderPublicKey: bsv.PrivateKey.fromBuffer(Buffer.from(key))
+        senderPublicKey: bsvJs.PrivateKey.fromBuffer(Buffer.from(key))
           .publicKey.toString(),
         invoiceNumber: '1',
         returnType: 'hex'
       })
-      const identityPublicKey = bsv.PrivateKey.fromHex(identity)
+      const identityPublicKey = bsvJs.PrivateKey.fromHex(identity)
         .publicKey.toString()
       expect(() => {
         deriveKey({
@@ -234,7 +234,7 @@ describe('deriveKey', () => {
       })
       const identity = getPaymentPrivateKey({
         recipientPrivateKey: Buffer.from(key).toString('hex'),
-        senderPublicKey: bsv.PrivateKey.fromBuffer(Buffer.from(key))
+        senderPublicKey: bsvJs.PrivateKey.fromBuffer(Buffer.from(key))
           .publicKey.toString(),
         invoiceNumber: '1',
         returnType: 'hex'
@@ -243,7 +243,7 @@ describe('deriveKey', () => {
       const invoiceNumber = getProtocolInvoiceNumber({ protocolID: params.protocolID, keyID: params.keyID })
       const linkage = getPaymentAddress({
         senderPrivateKey: identity,
-        recipientPublicKey: bsv.PrivateKey.fromHex(identity)
+        recipientPublicKey: bsvJs.PrivateKey.fromHex(identity)
           .publicKey.toString(),
         invoiceNumber,
         revealPaymentLinkage: true
@@ -264,7 +264,7 @@ describe('deriveKey', () => {
       })
       const identity = getPaymentPrivateKey({
         recipientPrivateKey: Buffer.from(key).toString('hex'),
-        senderPublicKey: bsv.PrivateKey.fromBuffer(Buffer.from(key))
+        senderPublicKey: bsvJs.PrivateKey.fromBuffer(Buffer.from(key))
           .publicKey.toString(),
         invoiceNumber: '1',
         returnType: 'hex'
@@ -273,13 +273,13 @@ describe('deriveKey', () => {
       const invoiceNumber = getProtocolInvoiceNumber({ protocolID: params.protocolID, keyID: params.keyID })
       const correspondingPrivateKey = getPaymentPrivateKey({
         recipientPrivateKey: anyone,
-        senderPublicKey: bsv.PrivateKey.fromHex(identity).publicKey.toString(),
+        senderPublicKey: bsvJs.PrivateKey.fromHex(identity).publicKey.toString(),
         invoiceNumber,
         returnType: 'hex'
       })
       // The public key from the key derived by the counterparty should be identical to the one that was returned by our derivation.
-      expect(returnValue).toEqual(bsv.PublicKey.fromPoint(
-        bsv.PrivateKey.fromHex(correspondingPrivateKey).publicKey.point
+      expect(returnValue).toEqual(bsvJs.PublicKey.fromPoint(
+        bsvJs.PrivateKey.fromHex(correspondingPrivateKey).publicKey.point
       ).toString())
     })
     it('Returns a properly-derived asymmetric private key', () => {
@@ -287,7 +287,7 @@ describe('deriveKey', () => {
       const invoiceNumber = getProtocolInvoiceNumber({ protocolID: params.protocolID, counterparty: params.counterparty, keyID: 1 })
       const identity = getPaymentPrivateKey({
         recipientPrivateKey: Buffer.from(key).toString('hex'),
-        senderPublicKey: bsv.PrivateKey.fromBuffer(Buffer.from(key))
+        senderPublicKey: bsvJs.PrivateKey.fromBuffer(Buffer.from(key))
           .publicKey.toString(),
         invoiceNumber: '1',
         returnType: 'hex'
@@ -295,14 +295,14 @@ describe('deriveKey', () => {
       // Derive our public key from the point-of-view of the counterparty
       const correspondingPublicKey = getPaymentAddress({
         senderPrivateKey: anyone,
-        recipientPublicKey: bsv.PrivateKey.fromHex(identity)
+        recipientPublicKey: bsvJs.PrivateKey.fromHex(identity)
           .publicKey.toString(),
         invoiceNumber,
         returnType: 'publicKey'
       })
       // The public key derived by the counterparty should be identical to the one from the private key that was returned by our derivation.
-      expect(bsv.PublicKey.fromPoint(
-        bsv.PrivateKey.fromHex(returnValue).publicKey.point
+      expect(bsvJs.PublicKey.fromPoint(
+        bsvJs.PrivateKey.fromHex(returnValue).publicKey.point
       ).toString()).toEqual(correspondingPublicKey)
     })
   })
@@ -319,7 +319,7 @@ describe('deriveKey', () => {
       const invoiceNumber = getProtocolInvoiceNumber({ protocolID: [2, 'hello world'], counterparty, keyID: 1 })
       const identity = getPaymentPrivateKey({
         recipientPrivateKey: Buffer.from(key).toString('hex'),
-        senderPublicKey: bsv.PrivateKey.fromBuffer(Buffer.from(key))
+        senderPublicKey: bsvJs.PrivateKey.fromBuffer(Buffer.from(key))
           .publicKey.toString(),
         invoiceNumber: '1',
         returnType: 'hex'
@@ -327,13 +327,13 @@ describe('deriveKey', () => {
       // Derive the private key from the point-of-view of the counterparty
       const correspondingPrivateKey = getPaymentPrivateKey({
         recipientPrivateKey: counterpartyPriv,
-        senderPublicKey: bsv.PrivateKey.fromHex(identity).publicKey.toString(),
+        senderPublicKey: bsvJs.PrivateKey.fromHex(identity).publicKey.toString(),
         invoiceNumber, // 'hello world-1',
         returnType: 'hex'
       })
       // The public key from the key derived by the counterparty should be identical to the one that was returned by our derivation.
-      expect(returnValue).toEqual(bsv.PublicKey.fromPoint(
-        bsv.PrivateKey.fromHex(correspondingPrivateKey).publicKey.point
+      expect(returnValue).toEqual(bsvJs.PublicKey.fromPoint(
+        bsvJs.PrivateKey.fromHex(correspondingPrivateKey).publicKey.point
       ).toString())
     })
     it('Returns a properly-derived asymmetric public key of our own', () => {
@@ -346,7 +346,7 @@ describe('deriveKey', () => {
       const invoiceNumber = getProtocolInvoiceNumber({ protocolID: [2, 'hello world'], counterparty, keyID: 1 })
       const identity = getPaymentPrivateKey({
         recipientPrivateKey: Buffer.from(key).toString('hex'),
-        senderPublicKey: bsv.PrivateKey.fromBuffer(Buffer.from(key))
+        senderPublicKey: bsvJs.PrivateKey.fromBuffer(Buffer.from(key))
           .publicKey.toString(),
         invoiceNumber: '1',
         returnType: 'hex'
@@ -354,7 +354,7 @@ describe('deriveKey', () => {
       // Derive our public key from the point-of-view of the counterparty
       const correspondingPublicKey = getPaymentAddress({
         senderPrivateKey: counterpartyPriv,
-        recipientPublicKey: bsv.PrivateKey.fromHex(identity).publicKey.toString(),
+        recipientPublicKey: bsvJs.PrivateKey.fromHex(identity).publicKey.toString(),
         invoiceNumber, // 'hello world-1',
         returnType: 'publicKey'
       })
@@ -366,7 +366,7 @@ describe('deriveKey', () => {
       const invoiceNumber = getProtocolInvoiceNumber({ protocolID: [2, 'hello world'], counterparty, keyID: 1 })
       const identity = getPaymentPrivateKey({
         recipientPrivateKey: Buffer.from(key).toString('hex'),
-        senderPublicKey: bsv.PrivateKey.fromBuffer(Buffer.from(key))
+        senderPublicKey: bsvJs.PrivateKey.fromBuffer(Buffer.from(key))
           .publicKey.toString(),
         invoiceNumber: '1',
         returnType: 'hex'
@@ -374,14 +374,14 @@ describe('deriveKey', () => {
       // Derive our public key from the point-of-view of the counterparty
       const correspondingPublicKey = getPaymentAddress({
         senderPrivateKey: counterpartyPriv,
-        recipientPublicKey: bsv.PrivateKey.fromHex(identity)
+        recipientPublicKey: bsvJs.PrivateKey.fromHex(identity)
           .publicKey.toString(),
         invoiceNumber, // : 'hello world-1',
         returnType: 'publicKey'
       })
       // The public key derived by the counterparty should be identical to the one from the private key that was returned by our derivation.
-      expect(bsv.PublicKey.fromPoint(
-        bsv.PrivateKey.fromHex(returnValue).publicKey.point
+      expect(bsvJs.PublicKey.fromPoint(
+        bsvJs.PrivateKey.fromHex(returnValue).publicKey.point
       ).toString()).toEqual(correspondingPublicKey)
     })
     it('Returns a properly-derived shared symmetric key', () => {
@@ -389,7 +389,7 @@ describe('deriveKey', () => {
       const invoiceNumber = getProtocolInvoiceNumber({ protocolID: [2, 'hello world'], counterparty, keyID: 1 })
       const identity = getPaymentPrivateKey({
         recipientPrivateKey: Buffer.from(key).toString('hex'),
-        senderPublicKey: bsv.PrivateKey.fromBuffer(Buffer.from(key))
+        senderPublicKey: bsvJs.PrivateKey.fromBuffer(Buffer.from(key))
           .publicKey.toString(),
         invoiceNumber: '1',
         returnType: 'hex'
@@ -397,7 +397,7 @@ describe('deriveKey', () => {
       // Derive our public key from the point-of-view of the counterparty
       const correspondingPublicKey = getPaymentAddress({
         senderPrivateKey: counterpartyPriv,
-        recipientPublicKey: bsv.PrivateKey.fromHex(identity)
+        recipientPublicKey: bsvJs.PrivateKey.fromHex(identity)
           .publicKey.toString(),
         invoiceNumber, // 'hello world-1',
         returnType: 'publicKey'
@@ -405,12 +405,12 @@ describe('deriveKey', () => {
       // Derive the private key from the point-of-view of the counterparty
       const correspondingPrivateKey = getPaymentPrivateKey({
         recipientPrivateKey: counterpartyPriv,
-        senderPublicKey: bsv.PrivateKey.fromHex(identity).publicKey.toString(),
+        senderPublicKey: bsvJs.PrivateKey.fromHex(identity).publicKey.toString(),
         invoiceNumber, // 'hello world-1',
         returnType: 'hex'
       })
-      const sharedSecret = bsv.PublicKey.fromString(correspondingPublicKey).point.mul(
-        bsv.crypto.BN.fromHex(correspondingPrivateKey, { size: 32 })
+      const sharedSecret = bsvJs.PublicKey.fromString(correspondingPublicKey).point.mul(
+        bsvJs.crypto.BN.fromHex(correspondingPrivateKey, { size: 32 })
       ).toBuffer().slice(1).toString('hex')
       // The symmetric shared secret calculated by the counterparty should be identical to the one that was returned.
       expect(returnValue).toEqual(sharedSecret)
@@ -420,7 +420,7 @@ describe('deriveKey', () => {
       const invoiceNumber = getProtocolInvoiceNumber({ protocolID: [2, 'hello world'], counterparty, keyID: 1 })
       const identity = getPaymentPrivateKey({
         recipientPrivateKey: Buffer.from(key).toString('hex'),
-        senderPublicKey: bsv.PrivateKey.fromBuffer(Buffer.from(key))
+        senderPublicKey: bsvJs.PrivateKey.fromBuffer(Buffer.from(key))
           .publicKey.toString(),
         invoiceNumber: 'custom',
         returnType: 'hex'
@@ -428,7 +428,7 @@ describe('deriveKey', () => {
       // Derive our public key from the point-of-view of the counterparty
       const correspondingPublicKey = getPaymentAddress({
         senderPrivateKey: counterpartyPriv,
-        recipientPublicKey: bsv.PrivateKey.fromHex(identity)
+        recipientPublicKey: bsvJs.PrivateKey.fromHex(identity)
           .publicKey.toString(),
         invoiceNumber, // 'hello world-1',
         returnType: 'publicKey'
@@ -436,12 +436,12 @@ describe('deriveKey', () => {
       // Derive the private key from the point-of-view of the counterparty
       const correspondingPrivateKey = getPaymentPrivateKey({
         recipientPrivateKey: counterpartyPriv,
-        senderPublicKey: bsv.PrivateKey.fromHex(identity).publicKey.toString(),
+        senderPublicKey: bsvJs.PrivateKey.fromHex(identity).publicKey.toString(),
         invoiceNumber, // 'hello world-1',
         returnType: 'hex'
       })
-      const sharedSecret = bsv.PublicKey.fromString(correspondingPublicKey).point.mul(
-        bsv.crypto.BN.fromHex(correspondingPrivateKey, { size: 32 })
+      const sharedSecret = bsvJs.PublicKey.fromString(correspondingPublicKey).point.mul(
+        bsvJs.crypto.BN.fromHex(correspondingPrivateKey, { size: 32 })
       ).toBuffer().slice(1).toString('hex')
       // The symmetric shared secret calculated by the counterparty should be identical to the one that was returned.
       expect(returnValue).toEqual(sharedSecret)
@@ -453,7 +453,7 @@ describe('deriveKey', () => {
       })
       const identity = getPaymentPrivateKey({
         recipientPrivateKey: Buffer.from(key).toString('hex'),
-        senderPublicKey: bsv.PrivateKey.fromBuffer(Buffer.from(key))
+        senderPublicKey: bsvJs.PrivateKey.fromBuffer(Buffer.from(key))
           .publicKey.toString(),
         invoiceNumber: '1',
         returnType: 'hex'
@@ -476,7 +476,7 @@ describe('deriveKey', () => {
       })
       const identity = getPaymentPrivateKey({
         recipientPrivateKey: Buffer.from(key).toString('hex'),
-        senderPublicKey: bsv.PrivateKey.fromBuffer(Buffer.from(key))
+        senderPublicKey: bsvJs.PrivateKey.fromBuffer(Buffer.from(key))
           .publicKey.toString(),
         invoiceNumber: '1',
         returnType: 'hex'
