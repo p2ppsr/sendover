@@ -55,6 +55,7 @@ const privateKey = sendover.getPaymentPrivateKey({
 ## API
 
 <!--#region ts2md-api-merged-here-->
+
 Links: [API](#api), [Interfaces](#interfaces), [Functions](#functions)
 
 ### Interfaces
@@ -117,10 +118,14 @@ Links: [API](#api), [Interfaces](#interfaces), [Functions](#functions)
 
 | |
 | --- |
+| [computePaymentContext](#function-computepaymentcontext) |
 | [deriveKey](#function-derivekey) |
 | [generateKeypair](#function-generatekeypair) |
 | [getPaymentAddress](#function-getpaymentaddress) |
+| [getPaymentAddressString](#function-getpaymentaddressstring) |
 | [getPaymentPrivateKey](#function-getpaymentprivatekey) |
+| [getPaymentPubKey](#function-getpaymentpubkey) |
+| [getPaymentPubKeyString](#function-getpaymentpubkeystring) |
 
 Links: [API](#api), [Interfaces](#interfaces), [Functions](#functions)
 
@@ -165,13 +170,13 @@ Returns a payment address for use by the sender, given the recipient's public ke
 
 ```ts
 export function getPaymentAddress(params: {
-    senderPrivateKey: string | bsv.crypto.BN | bsv.PrivateKey;
-    recipientPublicKey: string | bsv.PublicKey;
+    senderPrivateKey: string | bsvJs.crypto.BN | bsvJs.PrivateKey;
+    recipientPublicKey: string | bsvJs.PublicKey;
     invoiceNumber: string;
     revealCounterpartyLinkage?: boolean;
     revealPaymentLinkage?: boolean;
     returnType?: "address" | "publicKey" | "babbage-bsv";
-}): string | bsv.PublicKey 
+}): string | bsvJs.PublicKey 
 ```
 
 <details>
@@ -198,6 +203,125 @@ Argument Details
   + =false When true, reveals the secret between the two counterparties used for this specific invoice number, rather than performing key derivation. Returns the linkage as a hex string
 + **params.returnType**
   + =address] The destination key return type, either `address` or `publicKey`
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Functions](#functions)
+
+---
+#### Function: computePaymentContext
+
+```ts
+export function computePaymentContext(params: {
+    senderPrivateKey: string | bsv.Bn | bsv.PrivKey;
+    recipientPublicKey: string | bsv.PubKey;
+    invoiceNumber: string;
+}): {
+    publicKey: bsv.PubKey;
+    sharedSecret: Buffer;
+    hmac: Buffer;
+} 
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Functions](#functions)
+
+---
+#### Function: getPaymentPubKey
+
+```ts
+export function getPaymentPubKey(params: {
+    senderPrivateKey: string | bsv.Bn | bsv.PrivKey;
+    recipientPublicKey: string | bsv.PubKey;
+    invoiceNumber: string;
+}): bsv.PubKey 
+```
+
+<details>
+
+<summary>Function getPaymentPubKey Details</summary>
+
+Returns
+
+The destination public key
+
+Argument Details
+
++ **params**
+  + All parameters are provided in an object
++ **params.senderPrivateKey**
+  + The private key of the sender in WIF format
++ **params.recipientPublicKey**
+  + The public key of the recipient in hexadecimal DER format
++ **params.invoiceNumber**
+  + The invoice number to use
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Functions](#functions)
+
+---
+#### Function: getPaymentPubKeyString
+
+```ts
+export function getPaymentPubKeyString(params: {
+    senderPrivateKey: string | bsv.Bn | bsv.PrivKey;
+    recipientPublicKey: string | bsv.PubKey;
+    invoiceNumber: string;
+}): string 
+```
+
+<details>
+
+<summary>Function getPaymentPubKeyString Details</summary>
+
+Returns
+
+The destination public key Base58 string
+
+Argument Details
+
++ **params**
+  + All parameters are provided in an object
++ **params.senderPrivateKey**
+  + The private key of the sender in WIF format
++ **params.recipientPublicKey**
+  + The public key of the recipient in hexadecimal DER format
++ **params.invoiceNumber**
+  + The invoice number to use
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Functions](#functions)
+
+---
+#### Function: getPaymentAddressString
+
+```ts
+export function getPaymentAddressString(params: {
+    senderPrivateKey: string | bsv.Bn | bsv.PrivKey;
+    recipientPublicKey: string | bsv.PubKey;
+    invoiceNumber: string;
+}): string 
+```
+
+<details>
+
+<summary>Function getPaymentAddressString Details</summary>
+
+Returns
+
+The destination address as Base58 string
+
+Argument Details
+
++ **params**
+  + All parameters are provided in an object
++ **params.senderPrivateKey**
+  + The private key of the sender in WIF format
++ **params.recipientPublicKey**
+  + The public key of the recipient in hexadecimal DER format
++ **params.invoiceNumber**
+  + The invoice number to use
 
 </details>
 
