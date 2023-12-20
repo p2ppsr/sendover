@@ -11,13 +11,14 @@ for (let i = 0; i < 5; i++) {
   const result = getPaymentAddress({
     senderPrivateKey: senderKeypair.privateKey,
     recipientPublicKey: recipientKeypair.publicKey,
-    invoiceNumber: invoiceNumber
+    invoiceNumber: invoiceNumber,
+    returnType: 'publicKey'
   })
   vectors.push({
     senderPrivateKey: senderKeypair.privateKey,
     recipientPublicKey: recipientKeypair.publicKey,
     invoiceNumber: invoiceNumber,
-    address: result
+    publicKey: result
   })
 }
 

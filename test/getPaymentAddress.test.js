@@ -125,8 +125,9 @@ describe('getPaymentAddress', () => {
       expect(getPaymentAddress({
         senderPrivateKey: vector.senderPrivateKey,
         recipientPublicKey: vector.recipientPublicKey,
-        invoiceNumber: vector.invoiceNumber
-      })).toEqual(vector.address)
+        invoiceNumber: vector.invoiceNumber,
+        returnType: 'publicKey'
+      })).toEqual(vector.publicKey)
     })
   })
 })

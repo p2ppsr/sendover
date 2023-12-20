@@ -57,7 +57,7 @@ export function getPaymentPrivateKey (params: {
   const invoiceNumber = Buffer.from(String(params.invoiceNumber), 'utf8')
 
   // An HMAC is calculated with the shared secret and the invoice number.
-  const hmac = Hash.sha256hmac(sharedSecret, invoiceNumber)
+  const hmac = Hash.sha256hmac(invoiceNumber, sharedSecret)
   if (params.revealPaymentLinkage === true) {
     return hmac.toString('hex')
   }
