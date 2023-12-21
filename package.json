@@ -49,6 +49,6 @@
   },
   "dependencies": {
     "babbage-bsv": "^0.2.4",
-    "cwi-base": "^0.3.96"
+    "cwi-base": "^0.3.97"
   }
 }
