@@ -79,13 +79,13 @@ export interface SendOverDeriveKeyParams {
 
 /**
  * This function derives the child key given the root key.
- * 
+ *
  * The rootKey, identityKey, publicKey, and sharedSymmetricKey flags can be combined with
  * counterparty, protocolID and keyID to derive the needed keys.
  *
  * @return Hex string of key to return
  */
-export function deriveKey (params: SendOverDeriveKeyParams): string {
+export function deriveKey(params: SendOverDeriveKeyParams): string {
   let counterparty = params.counterparty
   const {
     key,

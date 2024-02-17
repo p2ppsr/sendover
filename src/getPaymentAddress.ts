@@ -79,13 +79,11 @@ export function getPaymentAddress (params: {
   }
 }
 
-export function computePaymentContext(params: {
+export function computePaymentContext (params: {
   senderPrivateKey: string | bsv.Bn | bsv.PrivKey
   recipientPublicKey: string | bsv.PubKey
   invoiceNumber: string
-})
-: { publicKey: bsv.PubKey, sharedSecret: Buffer, hmac: Buffer }
-{
+}): { publicKey: bsv.PubKey, sharedSecret: Buffer, hmac: Buffer } {
   // First, a shared secret is calculated based on the public and private keys.
   let publicKey: bsv.PubKey, privateKey: bsv.Bn
   if (typeof params.recipientPublicKey === 'string') {

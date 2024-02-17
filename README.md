@@ -120,6 +120,7 @@ Links: [API](#api), [Interfaces](#interfaces), [Functions](#functions)
 | --- |
 | [computePaymentContext](#function-computepaymentcontext) |
 | [deriveKey](#function-derivekey) |
+| [deriveKeyWithCache](#function-derivekeywithcache) |
 | [generateKeypair](#function-generatekeypair) |
 | [getPaymentAddress](#function-getpaymentaddress) |
 | [getPaymentAddressString](#function-getpaymentaddressstring) |
@@ -391,6 +392,34 @@ export function deriveKey(params: SendOverDeriveKeyParams): string
 Returns
 
 Hex string of key to return
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Functions](#functions)
+
+---
+#### Function: deriveKeyWithCache
+
+Modified deriveKey function that utilizes a caching mechanism.
+This function first checks if the result for the given parameters is already in the cache.
+If so, it returns the cached result. Otherwise, it proceeds with the derivation and stores the result in the cache.
+
+```ts
+export function deriveKeyWithCache(params: SendOverDeriveKeyParams): string 
+```
+
+<details>
+
+<summary>Function deriveKeyWithCache Details</summary>
+
+Returns
+
+Hex string of the derived key.
+
+Argument Details
+
++ **params**
+  + The input parameters for the key derivation.
 
 </details>
 
