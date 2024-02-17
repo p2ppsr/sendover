@@ -3,6 +3,7 @@ import bsv from 'babbage-bsv'
 const BN = bsv.crypto.BN
 const Hash = bsv.crypto.Hash
 const N = bsv.crypto.Point.getN()
+import sharedSecretCache from './sharedSecretCache'
 
 /**
  * Returns a private key for use by the recipient, given the sender's public key, the recipient's private key and the invoice number.
@@ -17,7 +18,7 @@ const N = bsv.crypto.Point.getN()
  *
  * @returns The incoming payment key that can unlock the money.
  */
-export function getPaymentPrivateKey (params: {
+export function getPaymentPrivateKey(params: {
   recipientPrivateKey: string | bsv.crypto.BN | bsv.PrivateKey
   senderPublicKey: string | bsv.PublicKey
   invoiceNumber: string
@@ -29,26 +30,38 @@ export function getPaymentPrivateKey (params: {
 
   // First, a shared secret is calculated based on the public and private keys.
   let publicKey: bsv.PublicKey, privateKey: bsv.PrivateKey
+  let cacheKey: string
 
   if (typeof params.senderPublicKey === 'string') {
+    cacheKey = `-${params.senderPublicKey}`
     publicKey = bsv.PublicKey.fromString(params.senderPublicKey)
   } else if (params.senderPublicKey instanceof bsv.PublicKey) {
+    cacheKey = `-${params.senderPublicKey.toString()}`
     publicKey = params.senderPublicKey
   } else {
     throw new Error('Unrecognized format for senderPublicKey')
   }
 
   if (typeof params.recipientPrivateKey === 'string') {
+    cacheKey = params.recipientPrivateKey + cacheKey
     privateKey = BN.fromHex(params.recipientPrivateKey)
   } else if (params.recipientPrivateKey instanceof BN) {
+    cacheKey = params.recipientPrivateKey.toHex({ size: 32 }) + cacheKey
     privateKey = params.recipientPrivateKey
   } else if (params.recipientPrivateKey instanceof bsv.PrivateKey) {
+    cacheKey = params.recipientPrivateKey.bn.toHex({ size: 32 }) + cacheKey
     privateKey = params.recipientPrivateKey.bn
   } else {
     throw new Error('Unrecognized format for recipientPrivateKey')
   }
 
-  const sharedSecret = publicKey.point.mul(privateKey).toBuffer()
+  let sharedSecret
+  if (sharedSecretCache[cacheKey]) {
+    sharedSecret = sharedSecretCache[cacheKey]
+  } else {
+    sharedSecret = publicKey.point.mul(privateKey).toBuffer()
+    sharedSecretCache[cacheKey] = sharedSecret
+  }
   if (params.revealCounterpartyLinkage === true) {
     return sharedSecret.toString('hex')
   }

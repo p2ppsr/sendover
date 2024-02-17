@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import bsvJs from 'babbage-bsv'
 import { bsv } from 'cwi-base'
-
 const BN = bsvJs.crypto.BN
 const Hash = bsvJs.crypto.Hash
 const G = bsvJs.crypto.Point.getG()
+import sharedSecretCache from './sharedSecretCache'
 
 /**
  * Returns a payment address for use by the sender, given the recipient's public key, the sender's private key and the invoice number.
@@ -19,7 +19,7 @@ const G = bsvJs.crypto.Point.getG()
  *
  * @returns The destination address or public key
  */
-export function getPaymentAddress (params: {
+export function getPaymentAddress(params: {
   senderPrivateKey: string | bsvJs.crypto.BN | bsvJs.PrivateKey
   recipientPublicKey: string | bsvJs.PublicKey
   invoiceNumber: string
@@ -29,23 +29,35 @@ export function getPaymentAddress (params: {
 }): string | bsvJs.PublicKey {
   // First, a shared secret is calculated based on the public and private keys.
   let publicKey: bsvJs.PublicKey, privateKey: bsvJs.BN
+  let cacheKey: string
   if (typeof params.recipientPublicKey === 'string') {
+    cacheKey = `-${params.recipientPublicKey}`
     publicKey = bsvJs.PublicKey.fromString(params.recipientPublicKey)
   } else if (params.recipientPublicKey instanceof bsvJs.PublicKey) {
+    cacheKey = `-${params.recipientPublicKey.toString()}`
     publicKey = params.recipientPublicKey
   } else {
     throw new Error('Unrecognized format for recipientPublicKey')
   }
   if (typeof params.senderPrivateKey === 'string') {
+    cacheKey = params.senderPrivateKey + cacheKey
     privateKey = BN.fromHex(params.senderPrivateKey)
   } else if (params.senderPrivateKey instanceof BN) {
+    cacheKey = params.senderPrivateKey.toHex({ size: 32 }) + cacheKey
     privateKey = params.senderPrivateKey
   } else if (params.senderPrivateKey instanceof bsvJs.PrivateKey) {
+    cacheKey = params.senderPrivateKey.bn.toHex({ size: 32 }) + cacheKey
     privateKey = params.senderPrivateKey.bn
   } else {
     throw new Error('Unrecognized format for senderPrivateKey')
   }
-  const sharedSecret = publicKey.point.mul(privateKey).toBuffer()
+  let sharedSecret
+  if (sharedSecretCache[cacheKey]) {
+    sharedSecret = sharedSecretCache[cacheKey]
+  } else {
+    sharedSecret = publicKey.point.mul(privateKey).toBuffer()
+    sharedSecretCache[cacheKey] = sharedSecret
+  }
   if (params.revealCounterpartyLinkage === true) {
     return sharedSecret.toString('hex')
   }
@@ -79,7 +91,7 @@ export function getPaymentAddress (params: {
   }
 }
 
-export function computePaymentContext (params: {
+export function computePaymentContext(params: {
   senderPrivateKey: string | bsv.Bn | bsv.PrivKey
   recipientPublicKey: string | bsv.PubKey
   invoiceNumber: string
@@ -131,7 +143,7 @@ export function computePaymentContext (params: {
  *
  * @returns The destination public key
  */
-export function getPaymentPubKey (params: {
+export function getPaymentPubKey(params: {
   senderPrivateKey: string | bsv.Bn | bsv.PrivKey
   recipientPublicKey: string | bsv.PubKey
   invoiceNumber: string
@@ -149,7 +161,7 @@ export function getPaymentPubKey (params: {
  *
  * @returns The destination public key Base58 string
  */
-export function getPaymentPubKeyString (params: {
+export function getPaymentPubKeyString(params: {
   senderPrivateKey: string | bsv.Bn | bsv.PrivKey
   recipientPublicKey: string | bsv.PubKey
   invoiceNumber: string
@@ -165,7 +177,7 @@ export function getPaymentPubKeyString (params: {
  *
  * @returns The destination address as Base58 string
  */
-export function getPaymentAddressString (params: {
+export function getPaymentAddressString(params: {
   senderPrivateKey: string | bsv.Bn | bsv.PrivKey
   recipientPublicKey: string | bsv.PubKey
   invoiceNumber: string
