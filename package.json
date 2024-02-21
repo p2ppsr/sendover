@@ -1,6 +1,6 @@
 {
   "name": "sendover",
-  "version": "1.2.16",
+  "version": "1.2.17",
   "description": "Tools for creating and paying invoices privately on Bitcoin SV",
   "main": "./out/src/index.js",
   "types": "./out/src/index.d.ts",
