@@ -214,13 +214,13 @@ Links: [API](#api), [Interfaces](#interfaces), [Functions](#functions)
 
 ```ts
 export function computePaymentContext(params: {
-    senderPrivateKey: string | bsv.Bn | bsv.PrivKey;
-    recipientPublicKey: string | bsv.PubKey;
+    senderPrivateKey: string | BigNumber | PrivateKey;
+    recipientPublicKey: string | PublicKey;
     invoiceNumber: string;
 }): {
-    publicKey: bsv.PubKey;
-    sharedSecret: Buffer;
-    hmac: Buffer;
+    publicKey: PublicKey;
+    sharedSecret: number[];
+    hmac: number[];
 } 
 ```
 
@@ -231,10 +231,10 @@ Links: [API](#api), [Interfaces](#interfaces), [Functions](#functions)
 
 ```ts
 export function getPaymentPubKey(params: {
-    senderPrivateKey: string | bsv.Bn | bsv.PrivKey;
-    recipientPublicKey: string | bsv.PubKey;
+    senderPrivateKey: string | BigNumber | PrivateKey;
+    recipientPublicKey: string | PublicKey;
     invoiceNumber: string;
-}): bsv.PubKey 
+}): PublicKey 
 ```
 
 <details>
@@ -265,8 +265,8 @@ Links: [API](#api), [Interfaces](#interfaces), [Functions](#functions)
 
 ```ts
 export function getPaymentPubKeyString(params: {
-    senderPrivateKey: string | bsv.Bn | bsv.PrivKey;
-    recipientPublicKey: string | bsv.PubKey;
+    senderPrivateKey: string | BigNumber | PrivateKey;
+    recipientPublicKey: string | PublicKey;
     invoiceNumber: string;
 }): string 
 ```
@@ -299,8 +299,8 @@ Links: [API](#api), [Interfaces](#interfaces), [Functions](#functions)
 
 ```ts
 export function getPaymentAddressString(params: {
-    senderPrivateKey: string | bsv.Bn | bsv.PrivKey;
-    recipientPublicKey: string | bsv.PubKey;
+    senderPrivateKey: string | BigNumber | PrivateKey;
+    recipientPublicKey: string | PublicKey;
     invoiceNumber: string;
 }): string 
 ```
