@@ -284,7 +284,7 @@ describe('deriveKey', () => {
     })
     it('Returns a properly-derived asymmetric private key', () => {
       const returnValue = deriveKey(params)
-      const invoiceNumber = getProtocolInvoiceNumber({ protocolID: params.protocolID, counterparty: params.counterparty, keyID: 1 })
+      const invoiceNumber = getProtocolInvoiceNumber({ protocolID: params.protocolID, keyID: 1 })
       const identity = getPaymentPrivateKey({
         recipientPrivateKey: Buffer.from(key).toString('hex'),
         senderPublicKey: bsvJs.PrivateKey.fromBuffer(Buffer.from(key))
@@ -316,7 +316,7 @@ describe('deriveKey', () => {
         publicKey: true,
         deriveFromRoot: false
       })
-      const invoiceNumber = getProtocolInvoiceNumber({ protocolID: [2, 'hello world'], counterparty, keyID: 1 })
+      const invoiceNumber = getProtocolInvoiceNumber({ protocolID: [2, 'hello world'], keyID: 1 })
       const identity = getPaymentPrivateKey({
         recipientPrivateKey: Buffer.from(key).toString('hex'),
         senderPublicKey: bsvJs.PrivateKey.fromBuffer(Buffer.from(key))
@@ -343,7 +343,7 @@ describe('deriveKey', () => {
         forSelf: true,
         deriveFromRoot: false
       })
-      const invoiceNumber = getProtocolInvoiceNumber({ protocolID: [2, 'hello world'], counterparty, keyID: 1 })
+      const invoiceNumber = getProtocolInvoiceNumber({ protocolID: [2, 'hello world'], keyID: 1 })
       const identity = getPaymentPrivateKey({
         recipientPrivateKey: Buffer.from(key).toString('hex'),
         senderPublicKey: bsvJs.PrivateKey.fromBuffer(Buffer.from(key))
@@ -363,7 +363,7 @@ describe('deriveKey', () => {
     })
     it('Returns a properly-derived asymmetric private key', () => {
       const returnValue = deriveKey(params)
-      const invoiceNumber = getProtocolInvoiceNumber({ protocolID: [2, 'hello world'], counterparty, keyID: 1 })
+      const invoiceNumber = getProtocolInvoiceNumber({ protocolID: [2, 'hello world'], keyID: 1 })
       const identity = getPaymentPrivateKey({
         recipientPrivateKey: Buffer.from(key).toString('hex'),
         senderPublicKey: bsvJs.PrivateKey.fromBuffer(Buffer.from(key))
@@ -386,7 +386,7 @@ describe('deriveKey', () => {
     })
     it('Returns a properly-derived shared symmetric key', () => {
       const returnValue = deriveKey({ ...params, sharedSymmetricKey: true })
-      const invoiceNumber = getProtocolInvoiceNumber({ protocolID: [2, 'hello world'], counterparty, keyID: 1 })
+      const invoiceNumber = getProtocolInvoiceNumber({ protocolID: [2, 'hello world'], keyID: 1 })
       const identity = getPaymentPrivateKey({
         recipientPrivateKey: Buffer.from(key).toString('hex'),
         senderPublicKey: bsvJs.PrivateKey.fromBuffer(Buffer.from(key))
@@ -417,7 +417,7 @@ describe('deriveKey', () => {
     })
     it('Returns a properly-derived shared symmetric key for a custom identity', () => {
       const returnValue = deriveKey({ ...params, sharedSymmetricKey: true, derivationIdentity: 'custom' })
-      const invoiceNumber = getProtocolInvoiceNumber({ protocolID: [2, 'hello world'], counterparty, keyID: 1 })
+      const invoiceNumber = getProtocolInvoiceNumber({ protocolID: [2, 'hello world'], keyID: 1 })
       const identity = getPaymentPrivateKey({
         recipientPrivateKey: Buffer.from(key).toString('hex'),
         senderPublicKey: bsvJs.PrivateKey.fromBuffer(Buffer.from(key))

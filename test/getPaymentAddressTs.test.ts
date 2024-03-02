@@ -2,7 +2,7 @@ import { computePaymentContext, getPaymentAddress, getPaymentAddressString, getP
 import { generateKeypair } from '../out/src/generateKeypair'
 import bsv from 'babbage-bsv'
 import testVectors from './getPaymentAddress.vectors'
-import { randomBytesBase64 } from 'cwi-base'
+import { asString, randomBytesBase64 } from 'cwi-base'
 
 describe('getPaymentAddress', () => {
   it('Returns a valid Bitcoin SV address', () => {
@@ -103,9 +103,9 @@ describe('getPaymentAddress', () => {
     expect(firstResult).toEqual(secondResult)
     const r1 = computePaymentContext(params1)
     const r2 = computePaymentContext(params2)
-    expect(r1.sharedSecret.toString('hex')).toBe(firstResult)
-    expect(r2.sharedSecret.toString('hex')).toBe(secondResult)
-    expect(r1.sharedSecret.toString('hex')).toEqual(r2.sharedSecret.toString('hex'))
+    expect(asString(r1.sharedSecret)).toBe(firstResult)
+    expect(asString(r2.sharedSecret)).toBe(secondResult)
+    expect(asString(r1.sharedSecret)).toEqual(asString(r2.sharedSecret))
   })
   it('Reveals different payment linkage information across two invoice numbers', () => {
     const senderKeypair = generateKeypair()
@@ -130,9 +130,9 @@ describe('getPaymentAddress', () => {
     expect(firstResult).not.toEqual(secondResult)
     const r1 = computePaymentContext(params1)
     const r2 = computePaymentContext(params2)
-    expect(r1.hmac.toString('hex')).toBe(firstResult)
-    expect(r2.hmac.toString('hex')).toBe(secondResult)
-    expect(r1.hmac.toString('hex')).not.toEqual(r2.hmac.toString('hex'))
+    expect(asString(r1.hmac)).toBe(firstResult)
+    expect(asString(r2.hmac)).toBe(secondResult)
+    expect(asString(r1.hmac)).not.toEqual(asString(r2.hmac))
   })
   testVectors.forEach((vector, index) => {
     it(`Passes test vector #${index + 1}`, () => {

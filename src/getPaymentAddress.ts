@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { BigNumber, PrivateKey, PublicKey, Hash, Curve } from '@bsv/sdk'
 import bsvJs from 'babbage-bsv'
-import { bsv } from 'cwi-base'
 const BN = bsvJs.crypto.BN
-const Hash = bsvJs.crypto.Hash
+const HashJs = bsvJs.crypto.Hash
 const G = bsvJs.crypto.Point.getG()
 import sharedSecretCache from './sharedSecretCache'
+import { asArray } from 'cwi-base'
 
 /**
  * Returns a payment address for use by the sender, given the recipient's public key, the sender's private key and the invoice number.
@@ -66,7 +67,7 @@ export function getPaymentAddress(params: {
   const invoiceNumber = Buffer.from(String(params.invoiceNumber), 'utf8')
 
   // An HMAC is calculated with the shared secret and the invoice number.
-  const hmac = Hash.sha256hmac(invoiceNumber, sharedSecret)
+  const hmac = HashJs.sha256hmac(invoiceNumber, sharedSecret)
   if (params.revealPaymentLinkage === true) {
     return hmac.toString('hex')
   }
@@ -92,45 +93,44 @@ export function getPaymentAddress(params: {
 }
 
 export function computePaymentContext(params: {
-  senderPrivateKey: string | bsv.Bn | bsv.PrivKey
-  recipientPublicKey: string | bsv.PubKey
+  senderPrivateKey: string | BigNumber | PrivateKey
+  recipientPublicKey: string | PublicKey
   invoiceNumber: string
-}): { publicKey: bsv.PubKey, sharedSecret: Buffer, hmac: Buffer } {
+}): { publicKey: PublicKey, sharedSecret: number[], hmac: number[] } {
   // First, a shared secret is calculated based on the public and private keys.
-  let publicKey: bsv.PubKey, privateKey: bsv.Bn
+  let publicKey: PublicKey
   if (typeof params.recipientPublicKey === 'string') {
-    publicKey = bsv.PubKey.fromString(params.recipientPublicKey)
-  } else if (params.recipientPublicKey instanceof bsv.PubKey) {
+    publicKey = PublicKey.fromString(params.recipientPublicKey)
+  } else if (params.recipientPublicKey instanceof PublicKey) {
     publicKey = params.recipientPublicKey
   } else {
     throw new Error('Unrecognized format for recipientPublicKey')
   }
+  let privateKey: BigNumber
   if (typeof params.senderPrivateKey === 'string') {
-    privateKey = new bsv.Bn(Buffer.from(params.senderPrivateKey, 'hex'))
-  } else if (params.senderPrivateKey instanceof bsv.Bn) {
+    privateKey = PrivateKey.fromString(params.senderPrivateKey, 'hex')
+  } else if (params.senderPrivateKey instanceof PrivateKey) {
     privateKey = params.senderPrivateKey
-  } else if (params.senderPrivateKey instanceof bsv.PrivKey) {
-    privateKey = params.senderPrivateKey.bn
+  } else if (params.senderPrivateKey instanceof BigNumber) {
+    privateKey = params.senderPrivateKey
   } else {
     throw new Error('Unrecognized format for senderPrivateKey')
   }
-  const sharedSecret = publicKey.point.mul(privateKey).toBuffer()
+  const sharedSecret = publicKey.mul(privateKey).encode(true) as number[]
 
   // The invoice number is turned into a buffer.
-  const invoiceBuffer = Buffer.from(String(params.invoiceNumber), 'utf8')
+  const invoiceBuffer = asArray(String(params.invoiceNumber), 'utf8')
 
   // An HMAC is calculated with the shared secret and the invoice number.
-  const hmac = bsv.Hash.sha256Hmac(sharedSecret, invoiceBuffer)
+  const hmac = Hash.sha256hmac(sharedSecret, invoiceBuffer)
 
-  const G = bsv.Point.getG()
+  const curve = new Curve()
 
   // The HMAC is multiplied by the generator point.
-  const point = G.mul(bsv.Bn.fromBuffer(hmac))
+  const point = curve.g.mul(new BigNumber(hmac))
 
   // The resulting point is added to the recipient public key.
-  const resultPublicKey = new bsv.PubKey(
-    publicKey.point.add(point), true
-  )
+  const resultPublicKey = new PublicKey(publicKey.add(point))
 
   return { publicKey: resultPublicKey, sharedSecret, hmac }
 }
@@ -144,10 +144,10 @@ export function computePaymentContext(params: {
  * @returns The destination public key
  */
 export function getPaymentPubKey(params: {
-  senderPrivateKey: string | bsv.Bn | bsv.PrivKey
-  recipientPublicKey: string | bsv.PubKey
+  senderPrivateKey: string | BigNumber | PrivateKey
+  recipientPublicKey: string | PublicKey
   invoiceNumber: string
-}): bsv.PubKey {
+}): PublicKey {
   const { publicKey } = computePaymentContext(params)
 
   return publicKey
@@ -162,8 +162,8 @@ export function getPaymentPubKey(params: {
  * @returns The destination public key Base58 string
  */
 export function getPaymentPubKeyString(params: {
-  senderPrivateKey: string | bsv.Bn | bsv.PrivKey
-  recipientPublicKey: string | bsv.PubKey
+  senderPrivateKey: string | BigNumber | PrivateKey
+  recipientPublicKey: string | PublicKey
   invoiceNumber: string
 }): string {
   return getPaymentPubKey(params).toString()
@@ -178,10 +178,10 @@ export function getPaymentPubKeyString(params: {
  * @returns The destination address as Base58 string
  */
 export function getPaymentAddressString(params: {
-  senderPrivateKey: string | bsv.Bn | bsv.PrivKey
-  recipientPublicKey: string | bsv.PubKey
+  senderPrivateKey: string | BigNumber | PrivateKey
+  recipientPublicKey: string | PublicKey
   invoiceNumber: string
 }): string {
   const pubKey = getPaymentPubKey(params)
-  return bsv.Address.fromPubKey(pubKey).toString()
+  return pubKey.toAddress()
 }
