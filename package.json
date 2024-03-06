@@ -50,6 +50,6 @@
   "dependencies": {
     "@bsv/sdk": "^1.0.9",
     "babbage-bsv": "^0.2.4",
-    "cwi-base": "^0.4.8"
+    "cwi-base": "^0.4.9"
   }
 }
