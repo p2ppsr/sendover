@@ -48,8 +48,8 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "@bsv/sdk": "^1.0.10",
+    "@bsv/sdk": "^1.0.11",
     "babbage-bsv": "^0.2.4",
-    "cwi-base": "^0.4.10"
+    "cwi-base": "^0.4.12"
   }
 }
