@@ -2,7 +2,7 @@ import { computePaymentContext, getPaymentAddress, getPaymentAddressString, getP
 import { generateKeypair } from '../out/src/generateKeypair'
 import bsv from 'babbage-bsv'
 import testVectors from './getPaymentAddress.vectors'
-import { asString, randomBytesBase64 } from 'cwi-base'
+import crypto from 'crypto'
 
 describe('getPaymentAddress', () => {
   it('Returns a valid Bitcoin SV address', () => {
@@ -148,3 +148,16 @@ describe('getPaymentAddress', () => {
     })
   })
 })
+
+function asString(val: Buffer | string | number[], encoding?: BufferEncoding): string {
+  if (Array.isArray(val)) val = Buffer.from(val)
+  return Buffer.isBuffer(val) ? val.toString(encoding ?? 'hex') : val
+}
+
+function randomBytes(count: number): Buffer {
+  return crypto.randomBytes(count)
+}
+
+function randomBytesBase64(count: number): string {
+  return randomBytes(count).toString('base64')
+}

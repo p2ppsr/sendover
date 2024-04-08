@@ -1,5 +1,4 @@
-import { getPaymentPrivateKey, getPaymentAddress } from '.'
-import { getProtocolInvoiceNumber, normalizeProtocol } from 'cwi-base'
+import { getPaymentPrivateKey, getPaymentAddress, normalizeProtocol, getProtocolInvoiceNumber } from '.'
 import bsv from 'babbage-bsv'
 
 /**

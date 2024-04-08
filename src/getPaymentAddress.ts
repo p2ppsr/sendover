@@ -5,7 +5,7 @@ const BN = bsvJs.crypto.BN
 const HashJs = bsvJs.crypto.Hash
 const G = bsvJs.crypto.Point.getG()
 import sharedSecretCache from './sharedSecretCache'
-import { asArray } from 'cwi-base'
+import { asArray } from '.'
 
 /**
  * Returns a payment address for use by the sender, given the recipient's public key, the sender's private key and the invoice number.

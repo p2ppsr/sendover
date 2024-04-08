@@ -2,7 +2,7 @@ import { deriveKey } from '../out/src/deriveKey'
 import { getPaymentAddress } from '../out/src/getPaymentAddress'
 import { getPaymentPrivateKey } from '../out/src/getPaymentPrivateKey'
 import bsvJs from 'babbage-bsv'
-import { getProtocolInvoiceNumber } from 'cwi-base'
+import { getProtocolInvoiceNumber } from '../out/src/BRC43Helpers'
 
 // A value for the key on which derivation is to be performed
 const key = Uint8Array.from([
