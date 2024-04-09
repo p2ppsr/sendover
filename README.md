@@ -118,6 +118,7 @@ Links: [API](#api), [Interfaces](#interfaces), [Functions](#functions)
 
 | |
 | --- |
+| [asArray](#function-asarray) |
 | [computePaymentContext](#function-computepaymentcontext) |
 | [deriveKey](#function-derivekey) |
 | [deriveKeyWithCache](#function-derivekeywithcache) |
@@ -127,6 +128,7 @@ Links: [API](#api), [Interfaces](#interfaces), [Functions](#functions)
 | [getPaymentPrivateKey](#function-getpaymentprivatekey) |
 | [getPaymentPubKey](#function-getpaymentpubkey) |
 | [getPaymentPubKeyString](#function-getpaymentpubkeystring) |
+| [getProtocolInvoiceNumber](#function-getprotocolinvoicenumber) |
 
 Links: [API](#api), [Interfaces](#interfaces), [Functions](#functions)
 
@@ -420,6 +422,58 @@ Argument Details
 
 + **params**
   + The input parameters for the key derivation.
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Functions](#functions)
+
+---
+#### Function: getProtocolInvoiceNumber
+
+```ts
+export function getProtocolInvoiceNumber(params: {
+    protocolID: string | [
+        number,
+        string
+    ];
+    keyID: number | string;
+}): string 
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Functions](#functions)
+
+---
+#### Function: asArray
+
+Coerce a value to number[]
+
+```ts
+export function asArray(val: Buffer | string | number[], encoding?: BufferEncoding): number[] {
+    let a: number[];
+    if (Array.isArray(val))
+        a = val;
+    else if (Buffer.isBuffer(val))
+        a = Array.from(val);
+    else
+        a = Array.from(Buffer.from(val, encoding || "hex"));
+    return a;
+}
+```
+
+<details>
+
+<summary>Function asArray Details</summary>
+
+Returns
+
+input val if it is a number[]; if string converts to Buffer using encoding; uses Array.from to convert buffer to number[]
+
+Argument Details
+
++ **val**
+  + Buffer or string or number[]. If string, encoding param applies.
++ **encoding**
+  + defaults to 'hex'
 
 </details>
 
