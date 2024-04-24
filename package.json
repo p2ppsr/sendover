@@ -49,6 +49,6 @@
   },
   "dependencies": {
     "@bsv/sdk": "^1.0.19",
-    "babbage-bsv": "^0.2.4"
+    "babbage-bsv": "^0.2.5"
   }
 }
