@@ -48,7 +48,7 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "@bsv/sdk": "^1.1.1",
+    "@bsv/sdk": "^1.1.7",
     "babbage-bsv": "^0.2.5"
   }
 }
